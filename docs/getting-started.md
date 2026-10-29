@@ -48,3 +48,11 @@ assert not accepts(dfa, "")
 
 See [tutorial](tutorial.md) for a guided explanation and
 [compatibility](compatibility.md) for grammar and error rules.
+
+## Choose a next page
+
+If finite automata are new, begin with [Foundations](learn/foundations.md).
+It defines the notation before using it and introduces a one-character example
+before the compound tutorial. If you already know the model, start at
+[Regex syntax](learn/regex-syntax.md); use [Practice](practice/exercises.md)
+after the subset-construction lesson.

@@ -28,13 +28,28 @@ class DocumentationExamplesTests(unittest.TestCase):
                 self.assertEqual(result.failed, 0)
 
     def test_documented_python_fences(self) -> None:
-        for filename in ("getting-started.md", "tutorial.md", "python-api.md"):
+        negative_examples = 0
+        for document_path in sorted(DOCS.rglob("*.md")):
             namespace: dict[str, object] = {}
-            document = (DOCS / filename).read_text()
+            document = document_path.read_text()
             blocks = re.findall(r"~~~python\n(.*?)~~~", document, flags=re.DOTALL)
-            for block in blocks:
-                with self.subTest(document=filename, block=block.splitlines()[0]):
-                    exec(compile(block, filename, "exec"), namespace)
+            for number, block in enumerate(blocks, 1):
+                with self.subTest(document=document_path.relative_to(DOCS), block=number):
+                    if ">>>" in block:
+                        parsed = doctest.DocTestParser().get_doctest(
+                            block, namespace, str(document_path), 0
+                        )
+                        result = doctest.DocTestRunner(optionflags=doctest.ELLIPSIS).run(parsed)
+                        self.assertEqual(result.failed, 0)
+                    else:
+                        exec(compile(block, str(document_path), "exec"), namespace)
+                    if "RegexSyntaxError" in block:
+                        negative_examples += 1
+        self.assertGreater(
+            negative_examples,
+            0,
+            "an executed negative grammar example must remain in the learning docs",
+        )
 
     def test_regex_pipeline_example(self) -> None:
         result = subprocess.run(

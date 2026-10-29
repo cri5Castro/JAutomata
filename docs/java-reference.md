@@ -1,5 +1,9 @@
 # Java reference behavior
 
+Use this as evidence and historical commentary, not as a first lesson. The
+[learning path](index.md#learn) explains the Python contract first, then links
+back here where a Java comment motivated an intentional correction.
+
 This source-linked audit covers all eleven Java files. It separates intended
 regular-language semantics from observed Java behavior; Java is not the
 correctness oracle for the Python port.

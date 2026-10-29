@@ -2,7 +2,9 @@
 
 This tutorial uses the delivered public API. Run snippets from the repository
 root after uv sync --project python. For an interactive packaged session, start
-uv run --project python python rather than the system Python executable.
+uv run --project python python rather than the system Python executable. It is
+the compound capstone: begin with [Foundations](learn/foundations.md) and the
+four short [Learn](index.md#learn) lessons if this is your first automata trace.
 
 ## Compile and recognize
 

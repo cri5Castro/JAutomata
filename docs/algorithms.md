@@ -1,5 +1,10 @@
 # Algorithms and Java correspondence
 
+For worked traces before the formal comparison, follow
+[Regex syntax](learn/regex-syntax.md), [Thompson construction](learn/thompson.md),
+[Epsilon closure](learn/epsilon-closure.md), and
+[Subset construction](learn/subset-construction.md).
+
 ## Regex parsing and Thompson construction
 
 The Java parser records precedence 3 for closure, 2 for concatenation, and 1

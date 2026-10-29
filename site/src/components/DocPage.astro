@@ -1,0 +1,10 @@
+---
+interface Props { title: string; eyebrow?: string }
+const { title, eyebrow = 'Walk through it' } = Astro.props;
+---
+
+<section class="teaching-panel" aria-label={title}>
+  <p class="eyebrow">{eyebrow}</p>
+  <h2>{title}</h2>
+  <slot />
+</section>

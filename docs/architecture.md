@@ -54,4 +54,5 @@ alphabet. If a discovered subset has no destination for a symbol, the empty
 subset is represented as a reachable sink. No DFA minimization is performed.
 
 Read [algorithms](algorithms.md) for complexity and Java correspondence, and
-[python-api](python-api.md) for callable contracts.
+[python-api](python-api.md) for callable contracts. For a step-by-step route
+through the same pipeline, start with [Foundations](learn/foundations.md).

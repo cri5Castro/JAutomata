@@ -1,5 +1,9 @@
 # Python compatibility contract
 
+This is the normative implementation contract. For progressive examples and
+revealable exercises, use the [learning path](index.md#learn) before returning
+here for exact grammar and algorithm rules.
+
 ## Purpose and assumptions
 
 The Python implementation lives under python/src/jautomata; tests live under

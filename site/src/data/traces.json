@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "generator": "python/scripts/generate_teaching_traces.py",
+  "traces": [
+    {
+      "id": "thompson-ab",
+      "title": "Run the Thompson NFA for a.b",
+      "expression": "a.b",
+      "steps": [
+        {
+          "label": "Initial epsilon closure",
+          "consumed": "",
+          "active": "{0}",
+          "active_states": [
+            0
+          ],
+          "epsilon_added": [],
+          "note": "Start with the initial state, then follow every epsilon edge."
+        },
+        {
+          "label": "Consume a",
+          "consumed": "a",
+          "active": "{1, 2}",
+          "active_states": [
+            1,
+            2
+          ],
+          "epsilon_added": [
+            2
+          ],
+          "note": "Move from every active state, then close the resulting set."
+        },
+        {
+          "label": "Accept",
+          "consumed": "ab",
+          "active": "{3}",
+          "active_states": [
+            3
+          ],
+          "epsilon_added": [],
+          "note": "The final active state accepts after both symbols are consumed."
+        }
+      ],
+      "verification": {
+        "input": "ab",
+        "nfa_accepts": true,
+        "dfa_accepts": true,
+        "dfa_state": 3
+      }
+    },
+    {
+      "id": "closure-cycle",
+      "title": "Close an epsilon cycle, then consume a",
+      "expression": "epsilon cycle then a",
+      "steps": [
+        {
+          "label": "Initial epsilon closure",
+          "consumed": "",
+          "active": "{0, 1}",
+          "active_states": [
+            0,
+            1
+          ],
+          "epsilon_added": [
+            1
+          ],
+          "note": "Start with the initial state, then follow every epsilon edge."
+        },
+        {
+          "label": "Accept",
+          "consumed": "a",
+          "active": "{2}",
+          "active_states": [
+            2
+          ],
+          "epsilon_added": [],
+          "note": "The final state is active after the complete input."
+        }
+      ],
+      "verification": {
+        "input": "a",
+        "nfa_accepts": true,
+        "dfa_accepts": true,
+        "dfa_state": 1
+      }
+    },
+    {
+      "id": "subset-union",
+      "title": "Follow a|b into the complete DFA sink",
+      "expression": "a|b",
+      "steps": [
+        {
+          "label": "Initial epsilon closure",
+          "consumed": "",
+          "active": "{0, 2, 4}",
+          "active_states": [
+            0,
+            2,
+            4
+          ],
+          "epsilon_added": [
+            0,
+            2
+          ],
+          "note": "Start with the initial state, then follow every epsilon edge."
+        },
+        {
+          "label": "Consume a",
+          "consumed": "a",
+          "active": "{1, 5}",
+          "active_states": [
+            1,
+            5
+          ],
+          "epsilon_added": [
+            5
+          ],
+          "note": "Move from every active state, then close the resulting set."
+        },
+        {
+          "label": "Reject",
+          "consumed": "ab",
+          "active": "{}",
+          "active_states": [],
+          "epsilon_added": [],
+          "note": "After a then b, no NFA branch remains; the DFA is in its sink."
+        }
+      ],
+      "verification": {
+        "input": "ab",
+        "nfa_accepts": false,
+        "dfa_accepts": false,
+        "dfa_state": 3
+      }
+    }
+  ]
+}

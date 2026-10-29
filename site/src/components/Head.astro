@@ -1,0 +1,19 @@
+---
+import DefaultHead from '@astrojs/starlight/components/Head.astro';
+---
+
+<DefaultHead><slot /></DefaultHead>
+<meta name="theme-color" content="#285a5f" />
+<meta name="color-scheme" content="light dark" />
+<script is:inline>
+  const nameSearchControl = () => {
+    const button = document.querySelector('button[data-open-modal]');
+    const shortcut = button?.querySelector('kbd')?.textContent?.replace(/\s+/g, ' ').trim();
+    if (button && shortcut) button.setAttribute('aria-label', `Search ${shortcut}`);
+    document.querySelectorAll('.expressive-code pre').forEach((code) => {
+      code.setAttribute('tabindex', '0');
+      code.setAttribute('aria-label', 'Scrollable code example');
+    });
+  };
+  document.addEventListener('DOMContentLoaded', nameSearchControl, { once: true });
+</script>

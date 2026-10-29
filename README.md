@@ -19,7 +19,7 @@ The supported regex operators are explicit . concatenation, | union, postfix
 There are no escapes, classes, wildcard, implicit concatenation, or regex-level
 epsilon token.
 
-## Quick start
+## Start here
 
 Python 3.10 or newer is required. The project environment is verified with
 Python 3.13.14; final wheel verification also records its tested clean-runtime
@@ -36,6 +36,23 @@ The second command starts an interactive Python session with the packaged
 project available. The example prints NFA and DFA acceptance for accepting,
 rejecting, and empty inputs. The package has no runtime dependencies.
 
+New to automata? Follow the short, source-linked learning path:
+
+1. [Foundations](docs/learn/foundations.md) defines the notation and a run.
+2. [Regex syntax](docs/learn/regex-syntax.md) explains the required explicit
+   dot before you compile anything.
+3. [Thompson construction](docs/learn/thompson.md),
+   [epsilon closure](docs/learn/epsilon-closure.md), and
+   [subset construction](docs/learn/subset-construction.md) build the pipeline
+   one trace at a time.
+4. [Practice](docs/practice/exercises.md) has revealable solutions; use the
+   [glossary](docs/reference/glossary.md) as a quick reference.
+
+The published learning site is served at
+[cri5castro.github.io/JAutomata](https://cri5castro.github.io/JAutomata/). Its
+production build, browser checks, and link checks are documented in
+[site/README.md](site/README.md).
+
 ## Repository layout
 
 - [src/](src/) is the preserved Java reference. Its
@@ -45,8 +62,9 @@ rejecting, and empty inputs. The package has no runtime dependencies.
   original educational design.
 - [python/](python/) contains the installable jautomata package, executable
   example, and standard-library unittest suite.
-- [docs/](docs/index.md) contains the tutorial, API reference, algorithms,
-  compatibility contract, and source-linked Java audit.
+- [docs/](docs/index.md) is the canonical Markdown source for the learning
+  path, tutorial, API reference, algorithms, compatibility contract, and
+  source-linked Java audit.
 
 Java execution is unavailable in this environment because no usable Java runtime
 is installed. The Java source remains unchanged and is documented as reference,

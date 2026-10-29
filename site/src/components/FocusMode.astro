@@ -1,0 +1,25 @@
+---
+import DefaultPageTitle from '@astrojs/starlight/components/PageTitle.astro';
+---
+
+<DefaultPageTitle><slot /></DefaultPageTitle>
+<div class="focus-bar" data-focus-bar>
+  <div><strong>Focus view</strong><span> Keep the lesson, soften distractions.</span></div>
+  <button type="button" aria-pressed="false" data-focus-toggle>Enter focus view</button>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const button = document.querySelector('[data-focus-toggle]');
+  const setFocus = (on: boolean) => {
+    root.classList.toggle('focus-mode', on);
+    button?.setAttribute('aria-pressed', String(on));
+    if (button) button.textContent = on ? 'Exit focus view' : 'Enter focus view';
+  };
+  setFocus(localStorage.getItem('jautomata-focus') === 'on');
+  button?.addEventListener('click', () => {
+    const on = !root.classList.contains('focus-mode');
+    localStorage.setItem('jautomata-focus', on ? 'on' : 'off');
+    setFocus(on);
+  });
+</script>

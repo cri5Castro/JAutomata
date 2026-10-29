@@ -1,0 +1,52 @@
+---
+import traceData from '../data/traces.json';
+
+interface Props { trace: string }
+const { trace } = Astro.props;
+const selected = traceData.traces.find((item) => item.id === trace);
+if (!selected) throw new Error(`Unknown teaching trace: ${trace}`);
+const [first] = selected.steps;
+---
+
+<section class="trace-player" data-trace={JSON.stringify(selected)} aria-labelledby={`${selected.id}-title`}>
+  <div class="trace-heading">
+    <p class="eyebrow">Step-through example</p>
+    <h2 id={`${selected.id}-title`}>{selected.title}</h2>
+    <p>Expression: <code>{selected.expression}</code></p>
+  </div>
+  <div class="trace-state" aria-live="polite">
+    <p class="trace-count">Step <span data-step>1</span> of {selected.steps.length}</p>
+    <p><strong data-label>{first.label}</strong> · consumed: <code data-consumed>{first.consumed || 'nothing yet'}</code></p>
+    <p data-active>{first.active}</p>
+    <p data-note>{first.note}</p>
+  </div>
+  <div class="trace-controls" aria-label="Trace controls">
+    <button type="button" data-back disabled>Previous</button>
+    <button type="button" data-next>Next step</button>
+  </div>
+  <noscript><p><strong>Without JavaScript:</strong> this lesson remains complete above. The trace steps are: {selected.steps.map((step) => `${step.label}: ${step.note}`).join(' ')}</p></noscript>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-trace]').forEach((element) => {
+    const trace = JSON.parse(element.dataset.trace || '{}');
+    let current = 0;
+    const fields = Object.fromEntries(['step', 'label', 'consumed', 'active', 'note'].map((name) => [name, element.querySelector(`[data-${name}]`)]));
+    const back = element.querySelector<HTMLButtonElement>('[data-back]');
+    const next = element.querySelector<HTMLButtonElement>('[data-next]');
+    if (!back || !next) return;
+    const render = () => {
+      const item = trace.steps[current];
+      fields.step.textContent = String(current + 1);
+      fields.label.textContent = item.label;
+      fields.consumed.textContent = item.consumed || 'nothing yet';
+      fields.active.textContent = item.active;
+      fields.note.textContent = item.note;
+      back.disabled = current === 0;
+      next.disabled = current === trace.steps.length - 1;
+      next.textContent = current === trace.steps.length - 1 ? 'Trace complete' : 'Next step';
+    };
+    back.addEventListener('click', () => { current -= 1; render(); });
+    next.addEventListener('click', () => { current += 1; render(); });
+  });
+</script>
