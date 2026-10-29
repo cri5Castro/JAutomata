@@ -102,6 +102,38 @@ test('light and dark schemes have no automatically detectable WCAG A/AA violatio
   }
 });
 
+test('search name remains accessible across platform shortcut and viewport changes', async ({ browser, baseURL }, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop-chromium', 'The visible shortcut is desktop-only.');
+  const platforms = [
+    ['Linux x86_64', 'Search Ctrl K'],
+    ['Win32', 'Search Ctrl K'],
+    ['MacIntel', 'Search ⌘ K'],
+  ] as const;
+
+  for (const [platform, expectedName] of platforms) {
+    const context = await browser.newContext({ viewport: { width: 700, height: 900 } });
+    await context.addInitScript((value) => {
+      Object.defineProperty(navigator, 'platform', { configurable: true, value });
+    }, platform);
+    const page = await context.newPage();
+    await page.goto(new URL('', baseURL).toString());
+    const control = page.locator('button[data-open-modal]');
+    for (const [width, renderedName] of [[700, ''], [1000, expectedName], [700, '']] as const) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.waitForTimeout(50);
+      await expect(control).toHaveAttribute('aria-label', expectedName);
+      expect(await control.evaluate((element) => (element.textContent ?? '').replace(/\s+/g, ' ').trim())).toBe(expectedName);
+      expect(await control.evaluate((element) => (element as HTMLButtonElement).innerText.replace(/\s+/g, ' ').trim())).toBe(renderedName);
+      const scan = await new AxeBuilder({ page })
+        .include('button[data-open-modal]')
+        .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
+        .analyze();
+      expect(scan.violations).toEqual([]);
+    }
+    await context.close();
+  }
+});
+
 test('essential lesson text and diagram alternatives remain available without JavaScript', async ({ browser, baseURL }) => {
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();

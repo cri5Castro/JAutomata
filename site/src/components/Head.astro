@@ -6,10 +6,18 @@ import DefaultHead from '@astrojs/starlight/components/Head.astro';
 <meta name="theme-color" content="#285a5f" />
 <meta name="color-scheme" content="light dark" />
 <script is:inline>
+  const separateVisibleText = (element) => {
+    if (element?.nextSibling?.textContent !== ' ') element?.after(document.createTextNode(' '));
+  };
   const nameSearchControl = () => {
     const button = document.querySelector('button[data-open-modal]');
-    const shortcut = button?.querySelector('kbd')?.textContent?.replace(/\s+/g, ' ').trim();
-    if (button && shortcut) button.setAttribute('aria-label', `Search ${shortcut}`);
+    const searchLabel = button?.querySelector('span');
+    const shortcut = button?.querySelector('kbd');
+    const shortcutKeys = shortcut?.querySelectorAll(':scope > kbd');
+    separateVisibleText(searchLabel);
+    if (shortcutKeys && shortcutKeys.length > 1) separateVisibleText(shortcutKeys[0]);
+    const semanticName = button?.textContent?.replace(/\s+/g, ' ').trim();
+    if (button && semanticName) button.setAttribute('aria-label', semanticName);
     document.querySelectorAll('.expressive-code pre').forEach((code) => {
       code.setAttribute('tabindex', '0');
       code.setAttribute('aria-label', 'Scrollable code example');
