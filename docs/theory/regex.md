@@ -12,10 +12,12 @@ The expression `a.b` describes the one-word language `{ab}`. The dot means conca
 
 The expression itself is source text; the words it recognizes are input text. For `a.b`, the source contains a dot but the accepted word `ab` does not. `compile_regex` turns source text into an epsilon-NFA, and `accepts` checks a complete input word against that graph.
 
-~~~text
-expression text        automaton graph              Boolean result
-     a.b       --compile_regex-->  NFA  --accepts(..., "ab")-->  True
-~~~
+**Read the figure:** Read left to right. Compile the expression `a.b`, then test the input word `ab` against the resulting graph.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="Compile expression text, then recognize input text, scrollable diagram" style="--diagram-width: 940px">
+  <img class="diagram" src="/JAutomata/diagrams/regex-pipeline.svg" alt="compile_regex turns expression a.b into an NFA; accepts with input ab returns True.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/regex-pipeline.svg">Open full-size diagram</a></p>
 
 This dialect is deliberately small. Familiar features from another regex library may have a different meaning or be unavailable here.
 

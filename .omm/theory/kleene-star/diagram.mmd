@@ -1,0 +1,8 @@
+flowchart LR
+  start["start"] --> q2(("2"))
+  q2 -->|ε: enter| q0(("0"))
+  q0 -->|a| q1(("1"))
+  q1 -->|ε: finish| q3((("3")))
+  q1 -->|ε: repeat| q0
+  q2 -->|ε: bypass| q3
+  style start fill:none,stroke:none

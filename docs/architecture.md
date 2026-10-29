@@ -27,15 +27,12 @@ python/
 
 ## Pipeline
 
-~~~mermaid
-flowchart LR
-  R[Explicit regex] --> P[Iterative parser]
-  P --> T[Thompson epsilon-NFA]
-  T --> E[epsilon_closure and accepts]
-  T --> S[BFS subset construction]
-  S --> D[Complete DFA]
-  D --> E
-~~~
+Read the figure from the expression downward: simulate the NFA directly, or convert it to a complete DFA first.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="From explicit regex to NFA simulation or a complete DFA, scrollable diagram" style="--diagram-width: 216px">
+  <img class="diagram" src="/JAutomata/diagrams/architecture-pipeline.svg" alt="Explicit regex becomes postfix tokens and a Thompson epsilon-NFA; evaluate it directly or convert it by BFS subsets to a complete DFA and evaluate that.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/architecture-pipeline.svg">Open full-size diagram</a></p>
 
 The parser validates explicit dots and produces postfix tokens without recursion.
 Thompson construction assigns fresh integer state IDs for every compilation.

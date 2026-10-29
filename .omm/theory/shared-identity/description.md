@@ -1,0 +1,1 @@
+The original list and the copied list both refer to one mutable state object. That state refers to one mutable transition object. Copying the container has not copied the objects, so a mutation is visible through either list. The arrows show object references, not automaton transitions.

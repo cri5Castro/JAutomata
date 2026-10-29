@@ -12,17 +12,12 @@ Infix source places a binary operator between operands: `a.b`. **Postfix** place
 
 An **abstract syntax tree**, or **AST**, records that structure explicitly. A node represents a literal or operation; its child nodes represent operands. A literal has no children and is called a **leaf**. The outermost operation is the **root**.
 
-~~~text
-infix source:       (a|b).c*
-                         ↓ validation and operator ordering
-postfix tokens:     a b | c * .
-                         ↓ assemble nodes
-AST root:           Concatenation
-                    /             \
-              Alternation       KleeneStar
-               /      \             |
-             "a"      "b"          "c"
-~~~
+**Read the figure:** Read downward to the concatenation root (`Concat`), then follow its left and right operands. Tree edges describe structure.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="From infix to postfix to an abstract syntax tree, scrollable diagram" style="--diagram-width: 552px">
+  <img class="diagram" src="/JAutomata/diagrams/parsing.svg" alt="Infix (a|b).c* becomes postfix a b | c * . and a Concatenation tree with Alternation(a, b) on the left and KleeneStar(c) on the right.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/parsing.svg">Open full-size diagram</a></p>
 
 In the public API, `to_postfix(expression)` returns a tuple of character tokens. `parse(expression)` returns an immutable AST. Both functions live in `jautomata.regex`. There is no requirement to call one before the other: each validates its own expression argument.
 

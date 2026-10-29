@@ -16,6 +16,13 @@ Successful execution prints `union checks passed` after all structural and langu
 
 For `a|b`, the literal fragments use `0, 1` and `2, 3`. The union wrapper allocates fresh states `4, 5`. Fill in the four epsilon edges before reading the assertions:
 
+**Read the figure:** From start `4`, follow either literal branch to the shared double-circle final `5`. Count four `ε` edges.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="Union: split into alternatives, then join, scrollable diagram" style="--diagram-width: 745px">
+  <img class="diagram" src="/JAutomata/diagrams/union.svg" alt="Start 4 splits by epsilon to 0 and 2; a takes 0 to 1 and b takes 2 to 3; both exits join final 5 by epsilon.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/union.svg">Open full-size diagram</a></p>
+
 | Role | Edge |
 | --- | --- |
 | Enter left | `4 --ε--> 0` |

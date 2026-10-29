@@ -1,0 +1,7 @@
+flowchart LR
+  choose["Choose one block"] --> ab["a.b<br/>a, then b"]
+  choose --> ac["a*.c<br/>Zero or more a, then c"]
+  ab --> done["One block complete"]
+  ac --> done
+  done --> finish["May finish"]
+  done -->|Another whole block| choose

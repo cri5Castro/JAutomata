@@ -18,12 +18,12 @@ That last case matters. The language of `a*` contains the empty word, so `(a*)+`
 
 Like star, positive closure adds a fresh entry and exit around a completed operand. For `a+`, the literal uses IDs `0` and `1`, and the wrapper uses `2` and `3`:
 
-~~~text
-start 2 --ε--> 0 --a--> 1 --ε--> 3 final
-               ^        |
-               +--- ε --+
-                  repeat
-~~~
+**Read the figure:** Enter the operand, consume `a`, then choose repeat or finish. There is no entry-to-final bypass.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="Positive closure: enter before finishing, scrollable diagram" style="--diagram-width: 917px">
+  <img class="diagram" src="/JAutomata/diagrams/positive-closure.svg" alt="Start 2 enters 0 by epsilon; after a reaches 1, epsilon repeats at 0 or finishes at final 3. There is no bypass from 2 to 3.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/positive-closure.svg">Open full-size diagram</a></p>
 
 | Edge | Role | Shared with star? |
 | --- | --- | --- |
@@ -53,11 +53,12 @@ The compiler first builds `a*` with entry `2` and exit `3`, including its bypass
 
 The outer wrapper adds `4 --ε--> 2`, `3 --ε--> 2`, and `3 --ε--> 5`. It does **not** add `4 --ε--> 5`. Nevertheless, this path exists:
 
-~~~text
-outer entry      inner star entry      inner star exit      outer exit
-     4 ---- ε --------> 2 ------ ε ----------> 3 ----- ε -------> 5
-       enter operand       inner bypass           finish
-~~~
+**Read the figure:** Follow this **one accepting path** through `(a*)+`; other states and edges are omitted. Each shown edge consumes nothing.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="One empty-word path through (a*)+, scrollable diagram" style="--diagram-width: 981px">
+  <img class="diagram" src="/JAutomata/diagrams/nullable-positive-path.svg" alt="One path in (a*)+ follows epsilon from start 4 through 2 and 3 to final 5, consuming nothing; other states and edges are omitted.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/nullable-positive-path.svg">Open full-size diagram</a></p>
 
 All three edges consume nothing. The machine traversed one whole operand word: the empty word accepted by the inner star. Therefore the outer plus accepts empty input.
 

@@ -12,18 +12,14 @@ Write `C(S)` for the epsilon closure of a set of states `S`. Include every seed,
 
 This example uses six states. The start state is 0; final states are 3 and 5. Finality does not affect the closure calculation.
 
-~~~text
-0 --ε--> 1 --ε--> 2 --a--> 3
-^        |        |
-|        ε        |
-|        v        |
-|        1        |
-+------- ε -------+
+**Read the figure:** Begin at `0` and follow only `ε` arrows. Keep the `a` edge and the separate component out of that closure.
 
-4 --ε--> 5 --ε--> 5
-~~~
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="Epsilon closure with cycles and separate components, scrollable diagram" style="--diagram-width: 752px">
+  <img class="diagram" src="/JAutomata/diagrams/theory-epsilon-closure.svg" alt="Epsilon cycles connect 0, 1 and 2; reaching final 3 requires a. Separate state 4 reaches final 5 by epsilon, and 1 and 5 have epsilon self-loops.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/theory-epsilon-closure.svg">Open full-size diagram</a></p>
 
-The return edge goes from 2 to 0. State 1 also has an epsilon self-loop. The following edge list removes any ambiguity in the drawing:
+The return edge goes from 2 to 0. State 1 also has an epsilon self-loop. The following edge list records the same transitions:
 
 | Source | Label | Target |
 | --- | --- | --- |

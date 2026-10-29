@@ -30,10 +30,12 @@ The outer plus requires one or more blocks. Inside it, choose one of three forms
 | `c+` | One or more `c` | `c`, `cc` |
 | `b.c*` | One `b`, then zero or more `c` | `b`, `bc`, `bcc` |
 
-~~~text
-choose [ at least two a | at least one c | b then any number of c ]
-                                 repeat a complete block at least once
-~~~
+Read the figure: choose a complete block, then finish or repeat. These boxes summarize the language, rather than individual NFA states.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="Main: choose and repeat complete blocks, scrollable diagram" style="--diagram-width: 808px">
+  <img class="diagram" src="/JAutomata/diagrams/main-blocks.svg" alt="Choose at least two a, at least one c, or b then zero or more c; finish after one complete block or repeat another block.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/main-blocks.svg">Open full-size diagram</a></p>
 
 Thus `b` accepts even though the complete expression uses plus: its `b.c*` block consumes one character. Empty input rejects because none of the three block forms is empty. `a` rejects because an `a` block needs at least two.
 
@@ -50,7 +52,14 @@ Some words have several block decompositions. For example, `bcc` can be one `b.c
 
 ## Revisit the unused graphs and subset probes
 
-The live setup creates `3 -ε→ 4 -1→ 5* -1→ 4` and a consistently relabeled version with states 6, 7 and 8. They are different graph values but both accept odd-length all-ones words. The final Java demo does not use either graph.
+The live setup creates an odd-ones graph with states 3, 4 and 5 and a consistently relabeled version with states 6, 7 and 8. They are different graph values but both accept odd-length all-ones words. The final Java demo does not use either graph.
+
+Read the figure: compare the two separately titled machines. Each start, final state and transition follows the renaming.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="Main: the same odd-ones language after relabeling, scrollable diagram" style="--diagram-width: 633px">
+  <img class="diagram" src="/JAutomata/diagrams/main-relabeling.svg" alt="Separate graphs: start 3 reaches 4 by epsilon, then 4 and final 5 alternate on 1; renaming 3, 4, 5 to 6, 7, 8 preserves the graph and language.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/main-relabeling.svg">Open full-size diagram</a></p>
 
 The commented subset experiment gives differently named objects the same kernel and closure labels. Its scratch container checks do not establish language equivalence, and the block is not executed. The [active Java equality method](../../src/AFDtoAFDbySubsets/Subconjunto.java#L53-L67) compares kernels; the Python converter instead keys by the full closed subset.
 

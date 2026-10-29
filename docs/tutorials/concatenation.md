@@ -16,9 +16,12 @@ Success prints `concatenation checks passed`. The program uses the existing comp
 
 The postfix tokens for `a.b` are `a b .`. The builder first creates two disjoint literal fragments, then joins them:
 
-~~~text
-start 0 --a--> 1 --ε--> 2 --b--> 3 final
-~~~
+**Read the figure:** Follow left to right: consume `a`, cross the free `ε` seam, then consume `b`. Double circles mark accepting states.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="Concatenation: a then b, scrollable diagram" style="--diagram-width: 747px">
+  <img class="diagram" src="/JAutomata/diagrams/concatenation.svg" alt="Start 0 consumes a to 1, follows epsilon to 2, then consumes b to accepting state 3.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/concatenation.svg">Open full-size diagram</a></p>
 
 Predict which state set is possible just after consuming `a`. It includes both sides of the epsilon link, but not the final state.
 

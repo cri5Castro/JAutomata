@@ -12,13 +12,14 @@ uv run --project python python pure_execution_demo.py
 
 ## Predict and trace
 
-Use this graph; `*` marks a final state and `ε` consumes no character:
+Use this graph; a double circle marks a final state and `ε` consumes no character:
 
-~~~text
-0 ──ε──> 1 ──a──> 2*
-0 <──ε── 1
-0 ──a──> 3 ──b──> 4*
-~~~
+**Read the figure:** Follow the `ε` cycle first, then keep both `a` destinations. A double circle marks an accepting state.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="Keep both branches after the epsilon cycle, scrollable diagram" style="--diagram-width: 596px">
+  <img class="diagram" src="/JAutomata/diagrams/pure-execution.svg" alt="Start 0 and state 1 form an epsilon cycle. On a, 1 reaches final 2 and 0 reaches 3; from 3, b reaches final 4.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/pure-execution.svg">Open full-size diagram</a></p>
 
 Start at `0`. Predict empty input, `a`, `ab` and `aa` before running. The two `a` routes are simultaneous possibilities, even though only one ends immediately in a final state.
 

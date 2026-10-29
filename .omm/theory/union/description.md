@@ -1,0 +1,1 @@
+The complete a|b NFA starts at 4 and has only accepting state 5. Epsilon splits from 4 to literal starts 0 and 2. The a edge reaches 1; the b edge reaches 3. Epsilon edges from 1 and 3 join at final 5. No direct bypass connects 4 to 5.

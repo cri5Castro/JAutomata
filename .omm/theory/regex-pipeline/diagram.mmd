@@ -1,0 +1,3 @@
+flowchart LR
+  expression["Expression: a.b"] -->|compile_regex| nfa["NFA graph"]
+  nfa -->|accepts with input ab| result["True"]

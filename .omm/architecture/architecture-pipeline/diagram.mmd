@@ -1,0 +1,7 @@
+flowchart TB
+  R["Explicit regex"] --> P["Iterative parser<br/>Postfix tokens"]
+  P --> T["Thompson ε-NFA"]
+  T --> E["Closure and<br/>recognition"]
+  T --> S["BFS subset construction"]
+  S --> D["Complete DFA"]
+  D --> E

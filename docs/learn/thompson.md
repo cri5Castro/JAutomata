@@ -22,7 +22,12 @@ The parser emits postfix `a b .`.
 The resulting NFA accepts `"ab"`. The epsilon edge joins the fragments but
 does not consume a character.
 
-<img class="diagram" src="/JAutomata/diagrams/thompson.svg" alt="Four-state NFA for a.b: 0 moves on a to 1, epsilon moves to 2, and 2 moves on b to accepting 3." />
+Read the figure from start 0 to double-circle final 3: the epsilon seam consumes no input.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="Concatenation: a then b, scrollable diagram" style="--diagram-width: 746px">
+  <img class="diagram" src="/JAutomata/diagrams/concatenation.svg" alt="Start 0 consumes a to 1, follows epsilon to 2, then consumes b to accepting state 3." />
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/concatenation.svg">Open full-size diagram</a></p>
 
 | State | Transition | Meaning |
 | --- | --- | --- |

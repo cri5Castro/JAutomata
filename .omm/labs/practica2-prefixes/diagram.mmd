@@ -1,0 +1,6 @@
+flowchart LR
+  choose["Choose one prefix"] --> bcd["(b.c.d)*<br/>Zero or more bcd blocks"]
+  choose --> fa["f+.a<br/>One or more f, then a"]
+  bcd --> f["Consume final f"]
+  fa --> f
+  f --> done["Whole word complete"]

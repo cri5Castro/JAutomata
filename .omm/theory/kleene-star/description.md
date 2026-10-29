@@ -1,0 +1,1 @@
+The complete a* NFA starts at 2 and accepts at 3. Epsilon enters from 2 to 0, the a edge goes from 0 to 1, and epsilon edges from 1 either repeat at 0 or finish at 3. A direct epsilon bypass from 2 to 3 permits zero repetitions.

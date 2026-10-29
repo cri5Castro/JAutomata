@@ -1,0 +1,1 @@
+Expression source a.b is compiled by compile_regex into an NFA graph. Calling accepts with that graph and the input word ab returns True. The dot belongs to expression syntax; it is not a character in the recognized input.

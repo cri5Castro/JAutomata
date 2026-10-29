@@ -1,0 +1,34 @@
+{
+  "geometryTolerance": 0.25,
+  "mermaid": {
+    "theme": "base",
+    "securityLevel": "strict",
+    "deterministicIds": true,
+    "htmlLabels": false,
+    "fontFamily": "Open Sans",
+    "flowchart": {
+      "htmlLabels": false,
+      "curve": "basis",
+      "nodeSpacing": 35,
+      "rankSpacing": 45
+    },
+    "sequence": {
+      "useMaxWidth": true,
+      "actorFontFamily": "Open Sans",
+      "noteFontFamily": "Open Sans",
+      "messageFontFamily": "Open Sans"
+    },
+    "themeVariables": {
+      "fontFamily": "Open Sans",
+      "fontSize": "18px",
+      "primaryColor": "#e7f4f3",
+      "primaryTextColor": "#143d3b",
+      "primaryBorderColor": "#186560",
+      "lineColor": "#186560",
+      "secondaryColor": "#fff4d6",
+      "tertiaryColor": "#f0f4f8",
+      "edgeLabelBackground": "#ffffff",
+      "background": "#ffffff"
+    }
+  }
+}

@@ -1,0 +1,1 @@
+Read downward. The infix expression (a|b).c* becomes postfix tokens a b | c * dot. The AST root is Concatenation. Its left child is Alternation with literal a and b children; its right child is KleeneStar with literal c as its operand. Edges below the root show tree operands, not automaton transitions.

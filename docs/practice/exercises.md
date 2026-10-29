@@ -41,6 +41,13 @@ is `"a"` accepted even though state `0` has no `a` edge?
 
 The start closure includes state `1`; `1 --a--> 2`, and `2` is final. The
 machine is not forced to choose only the start state after closure.
+
+Read the figure: epsilon makes state 1 available before the `a` is consumed.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="Epsilon closure: visit a cycle, then consume a, scrollable diagram" style="--diagram-width: 593px">
+  <img class="diagram" src="/JAutomata/diagrams/epsilon-closure.svg" alt="Start 0 and state 1 form an epsilon cycle; state 1 consumes a to reach double-circle final 2.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/epsilon-closure.svg">Open full-size diagram</a></p>
 </details>
 
 ## 3. Predict the compound tutorial

@@ -12,15 +12,12 @@ The expression `a|b` describes the language `{a, b}`. The operator `|` means uni
 
 To combine two completed fragments, allocate a fresh entry and a fresh exit. Add epsilon edges from the new entry into both operands, and from both operand exits into the new exit:
 
-~~~text
-                 ε       a       ε
-              +----> 0 ----> 1 ----+
-              |                    v
-start         4                    5 final
-              |                    ^
-              +----> 2 ----> 3 ----+
-                 ε       b       ε
-~~~
+**Read the figure:** From start `4`, follow either literal branch to the shared double-circle final `5`. Count four `ε` edges.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="Union: split into alternatives, then join, scrollable diagram" style="--diagram-width: 745px">
+  <img class="diagram" src="/JAutomata/diagrams/union.svg" alt="Start 4 splits by epsilon to 0 and 2; a takes 0 to 1 and b takes 2 to 3; both exits join final 5 by epsilon.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/union.svg">Open full-size diagram</a></p>
 
 The two labelled edges belong to the original literal fragments. The four `ε` edges perform the split and join without consuming input. State `4` is the new entry, and state `5` is the only final state of the completed graph. Being a start state does not imply having the smallest ID.
 

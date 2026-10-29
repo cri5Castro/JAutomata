@@ -1,0 +1,1 @@
+Read downward as time passes in this illustrative interleaving. The main evaluator starts a branch worker, then checks a false acceptance flag and resets flags while the worker is still running. The worker sets accepted to true afterward. This ordering illustrates a risk from the Java control flow; it is not a reproduced runtime trace.

@@ -1,0 +1,1 @@
+The graph starts at 0; accepting states are 2 and 4. Epsilon edges run in both directions between 0 and 1. State 1 consumes a to final 2, while state 0 consumes a to 3, which consumes b to final 4. After a, both 2 and 3 remain possible.

@@ -26,6 +26,10 @@ body { letter-spacing: 0.002em; }
 .trace-controls button:not(:disabled):hover, .focus-bar button:hover { background: var(--sl-color-accent-low); }
 .trace-controls button:disabled { cursor: not-allowed; opacity: .5; }
 .diagram { display: block; width: 100%; max-width: 46rem; margin: 1.5rem auto; border: 1px solid var(--sl-color-gray-5); border-radius: .75rem; background: white; }
+.diagram-scroll { max-width: 100%; overflow-x: auto; margin-block: 1.5rem .5rem; border: 1px solid var(--sl-color-gray-5); border-radius: .75rem; background: white; }
+.diagram-scroll .diagram { width: var(--diagram-width, 46rem); max-width: none; margin: 0 auto; border: 0; border-radius: 0; }
+.diagram-scroll:focus-visible { outline: 3px solid var(--sl-color-accent); outline-offset: 3px; }
+.diagram-link { margin-top: .5rem; font-size: .9rem; }
 .expressive-code pre:focus-visible { outline: 3px solid var(--sl-color-accent); outline-offset: 3px; }
 @media (max-width: 50rem) { .focus-bar { align-items: flex-start; flex-direction: column; margin-inline: 0; } .focus-bar > div { display: none; } .focus-bar button { width: 100%; } .trace-controls button { flex: 1; } .main-pane, .content-panel, .sl-markdown-content { min-width: 0; width: auto; } .sl-markdown-content :is(h1, h2, h3), .sl-markdown-content p, .sl-markdown-content li { overflow-wrap: anywhere; } .sl-markdown-content h1 { font-size: clamp(2rem, 10vw, 2.6rem); } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; } }

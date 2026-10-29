@@ -1,0 +1,1 @@
+Block-language guide for ((a.a+)|(c+)|(b.c*))+, not the full Thompson state graph. Choose at least two a characters, at least one c, or b followed by zero or more c. Only after a complete block may the word finish or another block begin. No block is empty.

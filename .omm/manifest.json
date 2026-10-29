@@ -1,0 +1,881 @@
+{
+  "version": 1,
+  "figures": [
+    {
+      "id": "concatenation",
+      "source": ".omm/theory/concatenation/diagram.mmd",
+      "description": ".omm/theory/concatenation/description.md",
+      "asset": "site/public/diagrams/concatenation.svg",
+      "title": "Concatenation: a then b",
+      "provenance": [
+        {
+          "path": "python/src/jautomata/thompson.py",
+          "note": "_Builder.build_postfix and compile_regex('a.b') supply exact state IDs, start/final states and labeled transitions; checked against the delivered immutable model."
+        }
+      ],
+      "placements": [
+        {
+          "path": "docs/theory/automata.md",
+          "alt": "Start 0 consumes a to 1, follows epsilon to 2, then consumes b to accepting state 3."
+        },
+        {
+          "path": "docs/theory/concatenation.md",
+          "alt": "Start 0 consumes a to 1, follows epsilon to 2, then consumes b to accepting state 3."
+        },
+        {
+          "path": "docs/tutorials/automata.md",
+          "alt": "Start 0 consumes a to 1, follows epsilon to 2, then consumes b to accepting state 3."
+        },
+        {
+          "path": "docs/tutorials/concatenation.md",
+          "alt": "Start 0 consumes a to 1, follows epsilon to 2, then consumes b to accepting state 3."
+        },
+        {
+          "path": "docs/learn/thompson.md",
+          "alt": "Start 0 consumes a to 1, follows epsilon to 2, then consumes b to accepting state 3."
+        }
+      ]
+    },
+    {
+      "id": "complete-alphabet",
+      "source": ".omm/theory/complete-alphabet/diagram.mmd",
+      "description": ".omm/theory/complete-alphabet/description.md",
+      "asset": "site/public/diagrams/complete-alphabet.svg",
+      "title": "The alphabet includes unreachable edges",
+      "provenance": [
+        {
+          "path": "docs/tutorials/complete-dfa.md",
+          "note": "The source Automaton fixture has states {0, 1, 9}, start 0, final {1}, and edges (0, a, 1) and (9, z, 9); disconnected labels still contribute to its alphabet."
+        }
+      ],
+      "placements": [
+        {
+          "path": "docs/theory/complete-dfa.md",
+          "alt": "Start 0 reaches accepting state 1 on a. Disconnected state 9 loops on z, so the source alphabet is {a, z}."
+        },
+        {
+          "path": "docs/tutorials/complete-dfa.md",
+          "alt": "Start 0 reaches accepting state 1 on a. Disconnected state 9 loops on z, so the source alphabet is {a, z}."
+        }
+      ]
+    },
+    {
+      "id": "concatenation-seams",
+      "source": ".omm/theory/concatenation-seams/diagram.mmd",
+      "description": ".omm/theory/concatenation-seams/description.md",
+      "asset": "site/public/diagrams/concatenation-seams.svg",
+      "title": "Two seams, the same word ab",
+      "provenance": [
+        {
+          "path": "python/src/jautomata/thompson.py",
+          "note": "_Builder.build_postfix and compile_regex('a.b') supply exact state IDs, start/final states and labeled transitions; checked against the delivered immutable model."
+        },
+        {
+          "path": "src/ExpresionRegularToAFN/ConstructorDeAutomatas.java",
+          "note": "aConcatenacionFusionDeEstados motivates the comparison; the fused X illustration is restricted to these literal operands, not arbitrary graphs."
+        },
+        {
+          "path": "docs/tutorials/concatenation.md",
+          "note": "The fused_literal_pair fixture and bounded word checks establish the literal-fragment comparison; X denotes its seam state."
+        }
+      ],
+      "placements": [
+        {
+          "path": "docs/theory/concatenation.md",
+          "alt": "Compare the four-state epsilon-linked a.b graph with a separate three-state graph whose seam is X; both finish at 3."
+        }
+      ]
+    },
+    {
+      "id": "epsilon-closure",
+      "source": ".omm/theory/epsilon-closure/diagram.mmd",
+      "description": ".omm/theory/epsilon-closure/description.md",
+      "asset": "site/public/diagrams/theory-epsilon-closure.svg",
+      "title": "Epsilon closure with cycles and separate components",
+      "provenance": [
+        {
+          "path": "docs/tutorials/epsilon-closure.md",
+          "note": "The six-state Automaton fixture and closure assertions supply all seven transitions; theory-epsilon-closure.svg intentionally differs from the existing three-state introductory epsilon-closure.svg."
+        }
+      ],
+      "placements": [
+        {
+          "path": "docs/theory/epsilon-closure.md",
+          "alt": "Epsilon cycles connect 0, 1 and 2; reaching final 3 requires a. Separate state 4 reaches final 5 by epsilon, and 1 and 5 have epsilon self-loops."
+        },
+        {
+          "path": "docs/tutorials/epsilon-closure.md",
+          "alt": "Epsilon cycles connect 0, 1 and 2; reaching final 3 requires a. Separate state 4 reaches final 5 by epsilon, and 1 and 5 have epsilon self-loops."
+        }
+      ]
+    },
+    {
+      "id": "shared-identity",
+      "source": ".omm/theory/shared-identity/diagram.mmd",
+      "description": ".omm/theory/shared-identity/description.md",
+      "asset": "site/public/diagrams/shared-identity.svg",
+      "title": "Two collections share the same mutable objects",
+      "provenance": [
+        {
+          "path": "src/ExpresionRegularToAFN/ConstructorDeAutomatas.java",
+          "note": "copiarEstados inserts existing Estado objects; copiarTuplas and copiarTuplasSinEliminar reuse Transicion objects while changing origins. This is static source-flow evidence, not a reproduced execution."
+        }
+      ],
+      "placements": [
+        {
+          "path": "docs/theory/identity.md",
+          "alt": "Original and copied lists point to the same mutable state, which refers to a mutable transition; arrows represent shared references."
+        }
+      ]
+    },
+    {
+      "id": "relabeling",
+      "source": ".omm/theory/relabeling/diagram.mmd",
+      "description": ".omm/theory/relabeling/description.md",
+      "asset": "site/public/diagrams/relabeling.svg",
+      "title": "Rename states and preserve the language",
+      "provenance": [
+        {
+          "path": "docs/theory/identity.md",
+          "note": "The worked renaming example maps 0 to 10 and 1 to 11; this supplemental illustration preserves the sole labeled edge, start and final set."
+        },
+        {
+          "path": "python/src/jautomata/model.py",
+          "note": "Automaton and Transition represent integer IDs and explicit start/final/edge endpoints."
+        }
+      ],
+      "placements": [
+        {
+          "path": "docs/theory/identity.md",
+          "alt": "Machine A is start 0 to final 1 on a; machine B is start 10 to final 11 on a, with all state references renamed consistently."
+        }
+      ]
+    },
+    {
+      "id": "kleene-star",
+      "source": ".omm/theory/kleene-star/diagram.mmd",
+      "description": ".omm/theory/kleene-star/description.md",
+      "asset": "site/public/diagrams/kleene-star.svg",
+      "title": "Kleene star: enter, repeat, finish or bypass",
+      "provenance": [
+        {
+          "path": "python/src/jautomata/thompson.py",
+          "note": "_Builder.build_postfix and compile_regex('a*') supply exact state IDs, start/final states and labeled transitions; checked against the delivered immutable model."
+        }
+      ],
+      "placements": [
+        {
+          "path": "docs/theory/kleene-star.md",
+          "alt": "Start 2 can bypass by epsilon to final 3, or enter 0, consume a to 1, then repeat at 0 or finish at 3."
+        },
+        {
+          "path": "docs/tutorials/kleene-star.md",
+          "alt": "Start 2 can bypass by epsilon to final 3, or enter 0, consume a to 1, then repeat at 0 or finish at 3."
+        }
+      ]
+    },
+    {
+      "id": "literal",
+      "source": ".omm/theory/literal/diagram.mmd",
+      "description": ".omm/theory/literal/description.md",
+      "asset": "site/public/diagrams/literal.svg",
+      "title": "One literal, two states",
+      "provenance": [
+        {
+          "path": "python/src/jautomata/thompson.py",
+          "note": "_Builder.build_postfix and compile_regex('a') supply exact state IDs, start/final states and labeled transitions; checked against the delivered immutable model."
+        }
+      ],
+      "placements": [
+        {
+          "path": "docs/theory/literal.md",
+          "alt": "Start state 0 consumes one a to reach double-circle accepting state 1."
+        },
+        {
+          "path": "docs/tutorials/literal.md",
+          "alt": "Start state 0 consumes one a to reach double-circle accepting state 1."
+        },
+        {
+          "path": "docs/learn/foundations.md",
+          "alt": "Start state 0 consumes one a to reach double-circle accepting state 1."
+        }
+      ]
+    },
+    {
+      "id": "parsing",
+      "source": ".omm/theory/parsing/diagram.mmd",
+      "description": ".omm/theory/parsing/description.md",
+      "asset": "site/public/diagrams/parsing.svg",
+      "title": "From infix to postfix to an abstract syntax tree",
+      "provenance": [
+        {
+          "path": "python/src/jautomata/regex.py",
+          "note": "to_postfix and parse for (a|b).c* supply the token order and immutable AST structure. Pipeline arrows are conceptual; callers need not call both public APIs in sequence."
+        }
+      ],
+      "placements": [
+        {
+          "path": "docs/theory/parsing.md",
+          "alt": "Infix (a|b).c* becomes postfix a b | c * . and a Concatenation tree with Alternation(a, b) on the left and KleeneStar(c) on the right."
+        }
+      ]
+    },
+    {
+      "id": "positive-closure",
+      "source": ".omm/theory/positive-closure/diagram.mmd",
+      "description": ".omm/theory/positive-closure/description.md",
+      "asset": "site/public/diagrams/positive-closure.svg",
+      "title": "Positive closure: enter before finishing",
+      "provenance": [
+        {
+          "path": "python/src/jautomata/thompson.py",
+          "note": "_Builder.build_postfix and compile_regex('a+') supply exact state IDs, start/final states and labeled transitions; checked against the delivered immutable model."
+        }
+      ],
+      "placements": [
+        {
+          "path": "docs/theory/positive-closure.md",
+          "alt": "Start 2 enters 0 by epsilon; after a reaches 1, epsilon repeats at 0 or finishes at final 3. There is no bypass from 2 to 3."
+        }
+      ]
+    },
+    {
+      "id": "nullable-positive-path",
+      "source": ".omm/theory/nullable-positive-path/diagram.mmd",
+      "description": ".omm/theory/nullable-positive-path/description.md",
+      "asset": "site/public/diagrams/nullable-positive-path.svg",
+      "title": "One empty-word path through (a*)+",
+      "provenance": [
+        {
+          "path": "python/src/jautomata/thompson.py",
+          "note": "compile_regex(\"(a*)+\") contains the path 4→2→3→5, all epsilon. This figure intentionally shows a path subset; the complete six-state graph also has consuming and repeat edges."
+        }
+      ],
+      "placements": [
+        {
+          "path": "docs/theory/positive-closure.md",
+          "alt": "One path in (a*)+ follows epsilon from start 4 through 2 and 3 to final 5, consuming nothing; other states and edges are omitted."
+        },
+        {
+          "path": "docs/tutorials/positive-closure.md",
+          "alt": "One path in (a*)+ follows epsilon from start 4 through 2 and 3 to final 5, consuming nothing; other states and edges are omitted."
+        }
+      ]
+    },
+    {
+      "id": "pure-execution",
+      "source": ".omm/theory/pure-execution/diagram.mmd",
+      "description": ".omm/theory/pure-execution/description.md",
+      "asset": "site/public/diagrams/pure-execution.svg",
+      "title": "Keep both branches after the epsilon cycle",
+      "provenance": [
+        {
+          "path": "docs/tutorials/pure-execution.md",
+          "note": "The immutable machine fixture specifies start 0, finals {2, 4}, epsilon edges 0↔1, and consuming edges 1—a→2, 0—a→3, 3—b→4."
+        }
+      ],
+      "placements": [
+        {
+          "path": "docs/theory/pure-execution.md",
+          "alt": "Start 0 and state 1 form an epsilon cycle. On a, 1 reaches final 2 and 0 reaches 3; from 3, b reaches final 4."
+        },
+        {
+          "path": "docs/tutorials/pure-execution.md",
+          "alt": "Start 0 and state 1 form an epsilon cycle. On a, 1 reaches final 2 and 0 reaches 3; from 3, b reaches final 4."
+        }
+      ]
+    },
+    {
+      "id": "evaluator-race",
+      "source": ".omm/theory/evaluator-race/diagram.mmd",
+      "description": ".omm/theory/evaluator-race/description.md",
+      "asset": "site/public/diagrams/evaluator-race.svg",
+      "title": "An illustrative late-worker timing hazard",
+      "provenance": [
+        {
+          "path": "src/Model/AutomataStructure/Automata.java",
+          "note": "evaluar starts processing and calls checarEstadosFinales, which reads and resets mutable flags; the source comment warns that it must wait for threads."
+        },
+        {
+          "path": "src/Model/AutomataStructure/Estado.java",
+          "note": "procesar starts asynchronous branch threads. The sequence is a possible hazard inferred from source flow, not a measured interleaving."
+        }
+      ],
+      "placements": [
+        {
+          "path": "docs/theory/pure-execution.md",
+          "alt": "Illustrative timing: the evaluator starts a worker, checks false and resets flags before the worker sets accepted to true."
+        }
+      ]
+    },
+    {
+      "id": "regex-pipeline",
+      "source": ".omm/theory/regex-pipeline/diagram.mmd",
+      "description": ".omm/theory/regex-pipeline/description.md",
+      "asset": "site/public/diagrams/regex-pipeline.svg",
+      "title": "Compile expression text, then recognize input text",
+      "provenance": [
+        {
+          "path": "python/src/jautomata/thompson.py",
+          "note": "_Builder.build_postfix and compile_regex('a.b') supply exact state IDs, start/final states and labeled transitions; checked against the delivered immutable model."
+        },
+        {
+          "path": "python/src/jautomata/simulation.py",
+          "note": "accepts(compile_regex(\"a.b\"), \"ab\") returns True after consuming the complete input word."
+        }
+      ],
+      "placements": [
+        {
+          "path": "docs/theory/regex.md",
+          "alt": "compile_regex turns expression a.b into an NFA; accepts with input ab returns True."
+        }
+      ]
+    },
+    {
+      "id": "competing-paths",
+      "source": ".omm/theory/competing-paths/diagram.mmd",
+      "description": ".omm/theory/competing-paths/description.md",
+      "asset": "site/public/diagrams/competing-paths.svg",
+      "title": "Three ways to consume a, then follow b",
+      "provenance": [
+        {
+          "path": "docs/tutorials/nfa-simulation.md",
+          "note": "The six-state NFA fixture and closure–move–closure trace specify all seven edges and finals {4, 5}; this same graph supplies the subset-construction tutorial."
+        }
+      ],
+      "placements": [
+        {
+          "path": "docs/theory/subset-construction.md",
+          "alt": "Start 0 has epsilon to 1 and a edges to 2 and 3; 1 has a to final 5, 3 has epsilon to final 4, 2 has b to 5, and 4 loops on b."
+        },
+        {
+          "path": "docs/theory/nfa-simulation.md",
+          "alt": "Start 0 has epsilon to 1 and a edges to 2 and 3; 1 has a to final 5, 3 has epsilon to final 4, 2 has b to 5, and 4 loops on b."
+        },
+        {
+          "path": "docs/tutorials/nfa-simulation.md",
+          "alt": "Start 0 has epsilon to 1 and a edges to 2 and 3; 1 has a to final 5, 3 has epsilon to final 4, 2 has b to 5, and 4 loops on b."
+        },
+        {
+          "path": "docs/tutorials/subset-construction.md",
+          "alt": "Start 0 has epsilon to 1 and a edges to 2 and 3; 1 has a to final 5, 3 has epsilon to final 4, 2 has b to 5, and 4 loops on b."
+        }
+      ]
+    },
+    {
+      "id": "union",
+      "source": ".omm/theory/union/diagram.mmd",
+      "description": ".omm/theory/union/description.md",
+      "asset": "site/public/diagrams/union.svg",
+      "title": "Union: split into alternatives, then join",
+      "provenance": [
+        {
+          "path": "python/src/jautomata/thompson.py",
+          "note": "_Builder.build_postfix and compile_regex('a|b') supply exact state IDs, start/final states and labeled transitions; checked against the delivered immutable model."
+        }
+      ],
+      "placements": [
+        {
+          "path": "docs/theory/union.md",
+          "alt": "Start 4 splits by epsilon to 0 and 2; a takes 0 to 1 and b takes 2 to 3; both exits join final 5 by epsilon."
+        },
+        {
+          "path": "docs/tutorials/union.md",
+          "alt": "Start 4 splits by epsilon to 0 and 2; a takes 0 to 1 and b takes 2 to 3; both exits join final 5 by epsilon."
+        }
+      ]
+    },
+    {
+      "id": "main-blocks",
+      "source": ".omm/labs/main-blocks/diagram.mmd",
+      "description": ".omm/labs/main-blocks/description.md",
+      "asset": "site/public/diagrams/main-blocks.svg",
+      "title": "Main: choose and repeat complete blocks",
+      "provenance": [
+        {
+          "path": "src/com/company/Main.java",
+          "note": "The commented expression at line 99 is ((a.a+)|(c+)|(b.c*))+. This block-level language explanation does not claim that the probe executes."
+        },
+        {
+          "path": "docs/labs/main.md",
+          "note": "The explicit expected-word assertions and worked decompositions check these three alternatives and their outer positive closure."
+        }
+      ],
+      "placements": [
+        {
+          "path": "docs/labs/main.md",
+          "alt": "Choose at least two a, at least one c, or b then zero or more c; finish after one complete block or repeat another block."
+        }
+      ]
+    },
+    {
+      "id": "practica1-language",
+      "source": ".omm/labs/practica1-language/diagram.mmd",
+      "description": ".omm/labs/practica1-language/description.md",
+      "asset": "site/public/diagrams/practica1-language.svg",
+      "title": "Practica 1: odd ones or even zeros",
+      "provenance": [
+        {
+          "path": "src/Practica1/Practica1Main.java",
+          "note": "main creates exactly states 1–6, starts at 1, marks 3 and 6 final, and supplies these eight edges; empty Java labels are epsilon."
+        },
+        {
+          "path": "docs/labs/practica1.md",
+          "note": "The nfa fixture reproduces all states and edges, and the independent parity predicate verifies the inferred language."
+        }
+      ],
+      "placements": [
+        {
+          "path": "docs/labs/practica1.md",
+          "alt": "Start 1 branches by epsilon to the odd-ones cycle 2–3 and even-zeros branch 4–5–6. Finals 3 and 6 are double circles; 4 and 6 form an epsilon cycle."
+        }
+      ]
+    },
+    {
+      "id": "practica2-prefixes",
+      "source": ".omm/labs/practica2-prefixes/diagram.mmd",
+      "description": ".omm/labs/practica2-prefixes/description.md",
+      "asset": "site/public/diagrams/practica2-prefixes.svg",
+      "title": "Practica 2: choose a prefix, then consume f",
+      "provenance": [
+        {
+          "path": "src/Practica2/Practica2.java",
+          "note": "main compiles ((b.c.d)*|f+.a).f."
+        },
+        {
+          "path": "docs/labs/practica2.md",
+          "note": "The independent described_language predicate checks (bcd)^k f for k at least zero and f^j a f for j at least one."
+        }
+      ],
+      "placements": [
+        {
+          "path": "docs/labs/practica2.md",
+          "alt": "Choose zero or more bcd blocks, or one or more f then a; either prefix must be followed by the final f."
+        }
+      ]
+    },
+    {
+      "id": "practica3-blocks",
+      "source": ".omm/labs/practica3-blocks/diagram.mmd",
+      "description": ".omm/labs/practica3-blocks/description.md",
+      "asset": "site/public/diagrams/practica3-blocks.svg",
+      "title": "Practica 3: repeat ab or an a-star-c block",
+      "provenance": [
+        {
+          "path": "src/Practica3/Practica3Main.java",
+          "note": "main constructs (a.b|a*.c)+ and converts the NFA to a DFA."
+        },
+        {
+          "path": "docs/labs/practica3.md",
+          "note": "The worked block examples, source expression, and explicit expected-word assertions establish the two alternatives and outer positive closure."
+        }
+      ],
+      "placements": [
+        {
+          "path": "docs/labs/practica3.md",
+          "alt": "Choose ab or zero or more a followed by c; finish after one complete block or repeat another block. Every block consumes input."
+        }
+      ]
+    },
+    {
+      "id": "main-relabeling",
+      "source": ".omm/labs/main-relabeling/diagram.mmd",
+      "description": ".omm/labs/main-relabeling/description.md",
+      "asset": "site/public/diagrams/main-relabeling.svg",
+      "title": "Main: the same odd-ones language after relabeling",
+      "provenance": [
+        {
+          "path": "src/com/company/Main.java",
+          "note": "Live setup at lines 64–86 creates both graphs with precisely these starts, finals and edges; neither is used by the final conversion."
+        },
+        {
+          "path": "docs/labs/main.md",
+          "note": "The left and right Automaton fixtures check their unequal graph values and equivalent acceptance over 31 bounded words."
+        }
+      ],
+      "placements": [
+        {
+          "path": "docs/labs/main.md",
+          "alt": "Separate graphs: start 3 reaches 4 by epsilon, then 4 and final 5 alternate on 1; renaming 3, 4, 5 to 6, 7, 8 preserves the graph and language."
+        }
+      ]
+    },
+    {
+      "id": "architecture-pipeline",
+      "source": ".omm/architecture/architecture-pipeline/diagram.mmd",
+      "description": ".omm/architecture/architecture-pipeline/description.md",
+      "asset": "site/public/diagrams/architecture-pipeline.svg",
+      "title": "From explicit regex to NFA simulation or a complete DFA",
+      "provenance": [
+        {
+          "path": "python/src/jautomata/regex.py",
+          "note": "to_postfix validates and parses without recursive descent."
+        },
+        {
+          "path": "python/src/jautomata/thompson.py",
+          "note": "compile_regex builds fresh immutable Thompson automata from postfix tokens."
+        },
+        {
+          "path": "python/src/jautomata/subsets.py",
+          "note": "to_dfa discovers closed subsets in breadth-first order with sorted alphabet symbols and supplies sink transitions."
+        },
+        {
+          "path": "python/src/jautomata/simulation.py",
+          "note": "epsilon_closure and accepts operate on the immutable NFA or DFA model."
+        }
+      ],
+      "placements": [
+        {
+          "path": "docs/architecture.md",
+          "alt": "Explicit regex becomes postfix tokens and a Thompson epsilon-NFA; evaluate it directly or convert it by BFS subsets to a complete DFA and evaluate that."
+        }
+      ]
+    },
+    {
+      "id": "nested-star",
+      "source": ".omm/theory/nested-star/diagram.mmd",
+      "description": ".omm/theory/nested-star/description.md",
+      "asset": "site/public/diagrams/nested-star.svg",
+      "title": "Nested star: a complete graph with an epsilon cycle",
+      "provenance": [
+        {
+          "path": "python/src/jautomata/thompson.py",
+          "note": "compile_regex(\"(a*)*\") supplies all six state IDs and nine transitions, start 4 and sole final 5."
+        },
+        {
+          "path": "docs/tutorials/kleene-star.md",
+          "note": "The nested fixture checks the 2–3 epsilon cycle and start closure {0, 2, 3, 4, 5}; this figure is the full graph, not only the highlighted closure route."
+        }
+      ],
+      "placements": [
+        {
+          "path": "docs/theory/kleene-star.md",
+          "alt": "Full (a*)* graph: start 4 reaches the epsilon cycle 2 to 3 to 2 and final 5 without input; only 0 to 1 consumes a."
+        },
+        {
+          "path": "docs/tutorials/kleene-star.md",
+          "alt": "Full (a*)* graph: start 4 reaches the epsilon cycle 2 to 3 to 2 and final 5 without input; only 0 to 1 consumes a."
+        }
+      ]
+    },
+    {
+      "id": "intro-epsilon-closure",
+      "source": ".omm/learn/intro-epsilon-closure/diagram.mmd",
+      "description": ".omm/learn/intro-epsilon-closure/description.md",
+      "asset": "site/public/diagrams/epsilon-closure.svg",
+      "title": "Epsilon closure: visit a cycle, then consume a",
+      "provenance": [
+        {
+          "path": "docs/learn/epsilon-closure.md",
+          "note": "The executable cycle fixture specifies states {0, 1, 2}, start 0, final {2}, epsilon edges 0 to 1 and 1 to 0, and the a edge 1 to 2."
+        },
+        {
+          "path": "python/scripts/generate_teaching_traces.py",
+          "note": "The existing closure-cycle trace uses this same three-state graph; its behavior is preserved."
+        }
+      ],
+      "placements": [
+        {
+          "path": "docs/learn/epsilon-closure.md",
+          "alt": "Start 0 and state 1 form an epsilon cycle; state 1 consumes a to reach double-circle final 2."
+        },
+        {
+          "path": "docs/practice/exercises.md",
+          "alt": "Start 0 and state 1 form an epsilon cycle; state 1 consumes a to reach double-circle final 2."
+        }
+      ]
+    },
+    {
+      "id": "subset-construction",
+      "source": ".omm/learn/subset-construction/diagram.mmd",
+      "description": ".omm/learn/subset-construction/description.md",
+      "asset": "site/public/diagrams/subset-construction.svg",
+      "title": "The complete DFA for a or b",
+      "provenance": [
+        {
+          "path": "python/src/jautomata/subsets.py",
+          "note": "to_dfa(compile_regex(\"a|b\")) yields numeric states 0–3 with start 0, finals {1, 2}, and eight transitions; D∅ names numeric sink 3."
+        },
+        {
+          "path": "python/scripts/generate_teaching_traces.py",
+          "note": "The existing subset-union trace assigns these closed subsets and complete transitions; the figure repairs omitted transitions in the original SVG."
+        }
+      ],
+      "placements": [
+        {
+          "path": "docs/learn/subset-construction.md",
+          "alt": "Complete DFA: D0 takes a to final D1 and b to final D2. Both a and b from either final go to D∅, which loops on both symbols; eight transitions in total."
+        }
+      ]
+    }
+  ],
+  "inventory": {
+    "baselineCommit": "226f4a4f3cbe27329ba4f7bfdcc84f3e3198cdc3",
+    "note": "Original line coordinates identify the approved inventory, not current line numbers. All 27 original conceptual text blocks are replaced by these 20 shared definitions; additions below bring the catalog to 25 definitions and 42 placements. Executable fences, expected outputs, tables, formulas, headings, source links and teaching traces remain text or their existing interactive component.",
+    "originalConceptualBlocks": [
+      {
+        "figure": "main-blocks",
+        "path": "docs/labs/main.md",
+        "originalLine": 33,
+        "disposition": "replaced"
+      },
+      {
+        "figure": "practica1-language",
+        "path": "docs/labs/practica1.md",
+        "originalLine": 19,
+        "disposition": "replaced"
+      },
+      {
+        "figure": "practica2-prefixes",
+        "path": "docs/labs/practica2.md",
+        "originalLine": 15,
+        "disposition": "replaced"
+      },
+      {
+        "figure": "practica3-blocks",
+        "path": "docs/labs/practica3.md",
+        "originalLine": 13,
+        "disposition": "replaced"
+      },
+      {
+        "figure": "concatenation",
+        "path": "docs/theory/automata.md",
+        "originalLine": 17,
+        "disposition": "replaced"
+      },
+      {
+        "figure": "concatenation",
+        "path": "docs/theory/concatenation.md",
+        "originalLine": 17,
+        "disposition": "replaced"
+      },
+      {
+        "figure": "concatenation",
+        "path": "docs/tutorials/automata.md",
+        "originalLine": 11,
+        "disposition": "replaced"
+      },
+      {
+        "figure": "concatenation",
+        "path": "docs/tutorials/concatenation.md",
+        "originalLine": 19,
+        "disposition": "replaced"
+      },
+      {
+        "figure": "complete-alphabet",
+        "path": "docs/theory/complete-dfa.md",
+        "originalLine": 21,
+        "disposition": "replaced"
+      },
+      {
+        "figure": "complete-alphabet",
+        "path": "docs/tutorials/complete-dfa.md",
+        "originalLine": 13,
+        "disposition": "replaced"
+      },
+      {
+        "figure": "concatenation-seams",
+        "path": "docs/theory/concatenation.md",
+        "originalLine": 42,
+        "disposition": "replaced"
+      },
+      {
+        "figure": "epsilon-closure",
+        "path": "docs/theory/epsilon-closure.md",
+        "originalLine": 15,
+        "disposition": "replaced"
+      },
+      {
+        "figure": "shared-identity",
+        "path": "docs/theory/identity.md",
+        "originalLine": 27,
+        "disposition": "replaced"
+      },
+      {
+        "figure": "relabeling",
+        "path": "docs/theory/identity.md",
+        "originalLine": 49,
+        "disposition": "replaced"
+      },
+      {
+        "figure": "kleene-star",
+        "path": "docs/theory/kleene-star.md",
+        "originalLine": 24,
+        "disposition": "replaced"
+      },
+      {
+        "figure": "literal",
+        "path": "docs/theory/literal.md",
+        "originalLine": 15,
+        "disposition": "replaced"
+      },
+      {
+        "figure": "parsing",
+        "path": "docs/theory/parsing.md",
+        "originalLine": 15,
+        "disposition": "replaced"
+      },
+      {
+        "figure": "positive-closure",
+        "path": "docs/theory/positive-closure.md",
+        "originalLine": 21,
+        "disposition": "replaced"
+      },
+      {
+        "figure": "nullable-positive-path",
+        "path": "docs/theory/positive-closure.md",
+        "originalLine": 56,
+        "disposition": "replaced"
+      },
+      {
+        "figure": "pure-execution",
+        "path": "docs/theory/pure-execution.md",
+        "originalLine": 27,
+        "disposition": "replaced"
+      },
+      {
+        "figure": "pure-execution",
+        "path": "docs/tutorials/pure-execution.md",
+        "originalLine": 17,
+        "disposition": "replaced"
+      },
+      {
+        "figure": "evaluator-race",
+        "path": "docs/theory/pure-execution.md",
+        "originalLine": 58,
+        "disposition": "replaced"
+      },
+      {
+        "figure": "regex-pipeline",
+        "path": "docs/theory/regex.md",
+        "originalLine": 15,
+        "disposition": "replaced"
+      },
+      {
+        "figure": "competing-paths",
+        "path": "docs/theory/subset-construction.md",
+        "originalLine": 23,
+        "disposition": "replaced"
+      },
+      {
+        "figure": "competing-paths",
+        "path": "docs/tutorials/nfa-simulation.md",
+        "originalLine": 13,
+        "disposition": "replaced"
+      },
+      {
+        "figure": "competing-paths",
+        "path": "docs/tutorials/subset-construction.md",
+        "originalLine": 13,
+        "disposition": "replaced"
+      },
+      {
+        "figure": "union",
+        "path": "docs/theory/union.md",
+        "originalLine": 15,
+        "disposition": "replaced"
+      }
+    ],
+    "additionalPlacements": [
+      {
+        "figure": "concatenation",
+        "path": "docs/learn/thompson.md"
+      },
+      {
+        "figure": "epsilon-closure",
+        "path": "docs/tutorials/epsilon-closure.md"
+      },
+      {
+        "figure": "kleene-star",
+        "path": "docs/tutorials/kleene-star.md"
+      },
+      {
+        "figure": "literal",
+        "path": "docs/tutorials/literal.md"
+      },
+      {
+        "figure": "literal",
+        "path": "docs/learn/foundations.md"
+      },
+      {
+        "figure": "nullable-positive-path",
+        "path": "docs/tutorials/positive-closure.md"
+      },
+      {
+        "figure": "competing-paths",
+        "path": "docs/theory/nfa-simulation.md"
+      },
+      {
+        "figure": "union",
+        "path": "docs/tutorials/union.md"
+      },
+      {
+        "figure": "main-relabeling",
+        "path": "docs/labs/main.md"
+      },
+      {
+        "figure": "architecture-pipeline",
+        "path": "docs/architecture.md"
+      },
+      {
+        "figure": "nested-star",
+        "path": "docs/theory/kleene-star.md"
+      },
+      {
+        "figure": "nested-star",
+        "path": "docs/tutorials/kleene-star.md"
+      },
+      {
+        "figure": "intro-epsilon-closure",
+        "path": "docs/learn/epsilon-closure.md"
+      },
+      {
+        "figure": "intro-epsilon-closure",
+        "path": "docs/practice/exercises.md"
+      },
+      {
+        "figure": "subset-construction",
+        "path": "docs/learn/subset-construction.md"
+      }
+    ],
+    "legacyAssets": [
+      {
+        "path": "site/public/diagrams/thompson.svg",
+        "disposition": "retired; introductory placement reuses concatenation.svg",
+        "figure": "concatenation"
+      },
+      {
+        "path": "site/public/diagrams/epsilon-closure.svg",
+        "disposition": "regenerated from the distinct three-state introductory source",
+        "figure": "intro-epsilon-closure"
+      },
+      {
+        "path": "site/public/diagrams/subset-construction.svg",
+        "disposition": "regenerated with all eight complete-DFA transitions",
+        "figure": "subset-construction"
+      }
+    ],
+    "preservedText": [
+      {
+        "path": "docs/architecture.md",
+        "content": "Python directory tree"
+      },
+      {
+        "path": "docs/theory/regex.md",
+        "content": "Nullable-expression reasoning"
+      },
+      {
+        "path": "docs/theory/validation-complexity.md",
+        "content": "Cost pseudocode"
+      },
+      {
+        "paths": [
+          "docs/tutorials/*.md",
+          "docs/labs/*.md"
+        ],
+        "content": "All 19 expected-output blocks (15 tutorial and 4 lab)"
+      }
+    ],
+    "exclusions": []
+  }
+}

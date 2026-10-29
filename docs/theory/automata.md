@@ -14,11 +14,14 @@ An edge labeled `a` consumes one `a` from the input. An **epsilon transition**, 
 
 Here is a machine that accepts exactly the word `ab`:
 
-~~~text
-start → (0) --a--> (1) --ε--> (2) --b--> ((3))
-~~~
+**Read the figure:** Follow left to right: consume `a`, cross the free `ε` seam, then consume `b`. Double circles mark accepting states.
 
-Single parentheses mark ordinary states; double parentheses mark a final state. The integers are names. State `3` is not “more accepting” than state `1`; its membership in the final-state set gives it that role.
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="Concatenation: a then b, scrollable diagram" style="--diagram-width: 747px">
+  <img class="diagram" src="/JAutomata/diagrams/concatenation.svg" alt="Start 0 consumes a to 1, follows epsilon to 2, then consumes b to accepting state 3.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/concatenation.svg">Open full-size diagram</a></p>
+
+Single circles mark ordinary states; double circles mark a final state. The integers are names. State `3` is not “more accepting” than state `1`; its membership in the final-state set gives it that role.
 
 Why build such a graph? It replaces an unbounded history of input characters with a finite amount of state. More elaborate machines can recognize infinitely many words using loops, while retaining finitely many states.
 

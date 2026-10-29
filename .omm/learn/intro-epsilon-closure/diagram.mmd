@@ -1,0 +1,6 @@
+flowchart LR
+  start["start"] --> q0(("0"))
+  q0 -->|ε| q1(("1"))
+  q1 -->|ε| q0
+  q1 -->|a| q2((("2")))
+  style start fill:none,stroke:none

@@ -18,7 +18,12 @@ The Thompson NFA starts by epsilon-branching to an `a` fragment and a `b`
 fragment. Its start subset contains both branch entries. On `a`, only the `a`
 branch reaches its final-side state; on `b`, only the `b` branch does.
 
-<img class="diagram" src="/JAutomata/diagrams/subset-construction.svg" alt="DFA for a|b: D0 goes on a to accepting D1 and on b to accepting D2; unmatched transitions lead to empty-set sink D-empty." />
+Read the figure: each `a, b` label stands for two transitions. Every state has one transition for each symbol, including the sink.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="The complete DFA for a or b, scrollable diagram" style="--diagram-width: 640px">
+  <img class="diagram" src="/JAutomata/diagrams/subset-construction.svg" alt="Complete DFA: D0 takes a to final D1 and b to final D2. Both a and b from either final go to D∅, which loops on both symbols; eight transitions in total." />
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/subset-construction.svg">Open full-size diagram</a></p>
 
 | DFA state | Represents | On the matching symbol |
 | --- | --- | --- |

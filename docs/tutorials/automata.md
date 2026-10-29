@@ -8,9 +8,12 @@ You will use the existing `Automaton`, `Transition`, and `accepts` APIs. The pro
 
 ## 1. Predict the graph's language
 
-~~~text
-start → (0) --a--> (1) --ε--> (2) --b--> ((3))
-~~~
+**Read the figure:** Follow left to right: consume `a`, cross the free `ε` seam, then consume `b`. Double circles mark accepting states.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="Concatenation: a then b, scrollable diagram" style="--diagram-width: 747px">
+  <img class="diagram" src="/JAutomata/diagrams/concatenation.svg" alt="Start 0 consumes a to 1, follows epsilon to 2, then consumes b to accepting state 3.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/concatenation.svg">Open full-size diagram</a></p>
 
 This graph has one path from start to final. The epsilon edge contributes no character, so the path spells `ab`.
 

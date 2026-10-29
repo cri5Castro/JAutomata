@@ -1,0 +1,1 @@
+Two separate machines both recognize only ab. The first starts at 0, consumes a to 1, follows epsilon to 2 and consumes b to final 3. The second starts at 0, consumes a to the fused seam X and b to final 3. This is a safe literal-fragment comparison, not a claim that arbitrary endpoint fusion preserves a language.

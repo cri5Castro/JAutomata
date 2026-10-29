@@ -1,0 +1,8 @@
+flowchart TB
+  infix["Infix: (a|b).c*"] -->|Validate and order| postfix["Postfix<br/>a b | c * ."]
+  postfix -->|Assemble nodes| root["Concat (.)"]
+  root -->|left| choice["Alternation"]
+  root -->|right| star["KleeneStar"]
+  choice -->|left| a["Literal a"]
+  choice -->|right| b["Literal b"]
+  star -->|operand| c["Literal c"]

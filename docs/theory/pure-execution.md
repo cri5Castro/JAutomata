@@ -24,13 +24,12 @@ In the delivered Python API, `accepts(machine, text)` returns a Boolean and leav
 
 The simulation keeps all possible states in a set. It does not pick a random edge, and it does not ask a scheduler to choose which answer wins. One ordinary thread can compute the entire set.
 
-~~~text
-                    a
-              ┌──────────> 2*  (accepting)
-start 0 ─ε─> 1
-       <─ε───┘
-       └──────a──────────> 3 ──b──> 4*
-~~~
+**Read the figure:** Follow the `ε` cycle first, then keep both `a` destinations. A double circle marks an accepting state.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="Keep both branches after the epsilon cycle, scrollable diagram" style="--diagram-width: 596px">
+  <img class="diagram" src="/JAutomata/diagrams/pure-execution.svg" alt="Start 0 and state 1 form an epsilon cycle. On a, 1 reaches final 2 and 0 reaches 3; from 3, b reaches final 4.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/pure-execution.svg">Open full-size diagram</a></p>
 
 Initial closure is `{0, 1}`. After `a`, both `{2, 3}` remain possible. The word `a` accepts because `2` is final. For `ab`, the branch at `2` has no `b` move, but the branch at `3` reaches `4`, so that word also accepts. The algorithm must retain the nonfinal branch at `3` even while another branch is already final.
 
@@ -55,10 +54,12 @@ The historical Java evaluator starts processing and then checks mutable acceptan
 
 An illustrative timing hazard is:
 
-~~~text
-main evaluator: start branch ── check flag(false) ── reset flags
-branch worker:                  still running ─────── set accepted(true)
-~~~
+**Read the figure:** Read downward as time passes. This is an illustrative ordering inferred from source, not a recorded execution.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="An illustrative late-worker timing hazard, scrollable diagram" style="--diagram-width: 705px">
+  <img class="diagram" src="/JAutomata/diagrams/evaluator-race.svg" alt="Illustrative timing: the evaluator starts a worker, checks false and resets flags before the worker sets accepted to true.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/evaluator-race.svg">Open full-size diagram</a></p>
 
 This ordering could report before a branch finishes or leave a late flag for another call. It explains a risk visible in control flow; it is not a claim that this exact interleaving was reproduced. Correct thread coordination could support a concurrent evaluator, but concurrency is unnecessary to define NFA semantics.
 

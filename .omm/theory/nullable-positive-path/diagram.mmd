@@ -1,0 +1,9 @@
+flowchart LR
+  subgraph path["One accepting path; other states and edges omitted"]
+    direction LR
+    start["start"] --> q4(("4"))
+    q4 -->|ε: enter operand| q2(("2"))
+    q2 -->|ε: inner bypass| q3(("3"))
+    q3 -->|ε: finish| q5((("5")))
+  end
+  style start fill:none,stroke:none

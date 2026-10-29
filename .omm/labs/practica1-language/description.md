@@ -1,0 +1,1 @@
+Complete six-state NFA reconstructed from Practica1Main. Start state 1 reaches 2 or 4 by epsilon. State 2 consumes 1 to accepting 3; 3 consumes 1 back to 2. State 4 consumes 0 to 5 and 5 consumes 0 to accepting 6. Epsilon edges connect 4 to 6 and 6 to 4. The language is odd-length words of only ones, or even-length words of only zeros, including empty input.

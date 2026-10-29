@@ -1,0 +1,17 @@
+flowchart LR
+  subgraph original["Original b: states 3, 4, 5"]
+    direction LR
+    startA["start"] --> a3(("3"))
+    a3 -->|ε| a4(("4"))
+    a4 -->|1| a5((("5")))
+    a5 -->|1| a4
+  end
+  subgraph renamed["Relabeled c: 3 → 6, 4 → 7, 5 → 8"]
+    direction LR
+    startB["start"] --> b6(("6"))
+    b6 -->|ε| b7(("7"))
+    b7 -->|1| b8((("8")))
+    b8 -->|1| b7
+  end
+  style startA fill:none,stroke:none
+  style startB fill:none,stroke:none

@@ -10,11 +10,12 @@ The program creates its own graph and data. Its trace is a teaching view of one 
 
 Start at 0. Final states are 4 and 5.
 
-~~~text
-0 --ε--> 1       0 --a--> 2       0 --a--> 3
-1 --a--> 5       3 --ε--> 4       2 --b--> 5
-4 --b--> 4
-~~~
+**Read the figure:** Start at `0`; keep both direct `a` branches and the `ε` route to `1`. Double circles mark finals `4` and `5`.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="Three ways to consume a, then follow b, scrollable diagram" style="--diagram-width: 596px">
+  <img class="diagram" src="/JAutomata/diagrams/competing-paths.svg" alt="Start 0 has epsilon to 1 and a edges to 2 and 3; 1 has a to final 5, 3 has epsilon to final 4, 2 has b to 5, and 4 loops on b.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/competing-paths.svg">Open full-size diagram</a></p>
 
 State 0 can consume `a` in two ways **and** has an epsilon alternative through 1. Predict empty input, `a`, `abb`, and `aa`. Keep all paths until the input determines which survive.
 

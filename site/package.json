@@ -4,12 +4,12 @@
   "version": "1.0.0",
   "type": "module",
   "engines": {
-    "node": ">=22.12.0 <27"
+    "node": ">=22.13.0 <27"
   },
   "scripts": {
     "generate-api": "cd .. && uv run --project python python python/scripts/generate_api_docs.py",
     "generate-traces": "cd .. && uv run --project python python python/scripts/generate_teaching_traces.py",
-    "check-generated": "cd .. && uv run --project python python python/scripts/generate_api_docs.py --check && uv run --project python python python/scripts/generate_teaching_traces.py --check",
+    "check-generated": "cd .. && uv run --project python python python/scripts/generate_api_docs.py --check && uv run --project python python python/scripts/generate_teaching_traces.py --check && cd site && npm run check-diagrams",
     "check-content": "node --test ./tests/prepare-content.test.mjs",
     "prepare-content": "node ./scripts/prepare-content.mjs",
     "dev": "npm run prepare-content && astro dev",
@@ -17,7 +17,11 @@
     "preview": "node ./scripts/preview.mjs",
     "check": "npm run check-generated && npm run check-content && npm run prepare-content && astro check",
     "test:e2e": "playwright test",
-    "test:links": "node ./scripts/check-links.mjs"
+    "test:links": "node ./scripts/check-links.mjs",
+    "generate-diagrams": "node ./scripts/diagrams.mjs",
+    "check-diagrams": "node ./scripts/diagrams.mjs --check",
+    "test:diagrams": "node --test ./tests/diagrams.test.mjs",
+    "omm": "cd .. && omm"
   },
   "dependencies": {
     "@astrojs/mdx": "8.1.1",
@@ -29,6 +33,9 @@
     "@axe-core/playwright": "4.14.0",
     "@playwright/test": "1.64.1",
     "github-slugger": "2.0.0",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "oh-my-mermaid": "0.2.0",
+    "@mermaid-js/mermaid-cli": "12.0.0",
+    "puppeteer": "25.16.0"
   }
 }

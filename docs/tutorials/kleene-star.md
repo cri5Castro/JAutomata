@@ -16,6 +16,13 @@ Successful execution prints `star checks passed`. The program calls the delivere
 
 The compiler builds the literal `0 --a--> 1`, then wraps it with entry `2` and exit `3`. Label the four epsilon edges by purpose:
 
+**Read the figure:** Find the `ε: bypass` route first, then follow one `a` and choose repeat or finish. Double circles mark the only final state.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="Kleene star: enter, repeat, finish or bypass, scrollable diagram" style="--diagram-width: 920px">
+  <img class="diagram" src="/JAutomata/diagrams/kleene-star.svg" alt="Start 2 can bypass by epsilon to final 3, or enter 0, consume a to 1, then repeat at 0 or finish at 3.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/kleene-star.svg">Open full-size diagram</a></p>
+
 | Edge | Purpose |
 | --- | --- |
 | `2 → 0` | enter |
@@ -112,6 +119,13 @@ Reaching the same set after another `a` describes repeatable behavior; it does n
 For `(a.b)*`, returning to the repeat point takes two consumed characters. The fixtures rejecting `a` and `aba` test that the machine cannot finish halfway through a block.
 
 ## 4. Trace the epsilon cycle once
+
+Read the figure: this is the full `(a*)*` graph, not just the closure route. Follow the inner bypass and outer repeat between 2 and 3.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="Nested star: a complete graph with an epsilon cycle, scrollable diagram" style="--diagram-width: 1160px">
+  <img class="diagram" src="/JAutomata/diagrams/nested-star.svg" alt="Full (a*)* graph: start 4 reaches the epsilon cycle 2 to 3 to 2 and final 5 without input; only 0 to 1 consumes a.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/nested-star.svg">Open full-size diagram</a></p>
 
 The nested graph contains `2 --ε--> 3 --ε--> 2`. Starting from `4`, an example exploration goes as follows; actual set iteration order is not significant:
 

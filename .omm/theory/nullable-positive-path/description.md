@@ -1,0 +1,1 @@
+This shows only one accepting path through the larger (a*)+ automaton, not the complete graph. From outer start 4, epsilon enters inner-star start 2, takes its epsilon bypass to 3, and exits by epsilon to final 5. The three edges consume no characters. Other states, consuming edges and repeat edges are omitted.

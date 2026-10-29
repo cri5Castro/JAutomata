@@ -1,0 +1,1 @@
+The complete a+ NFA starts at 2 and accepts at 3. Epsilon enters 0; consuming a reaches 1. From 1, epsilon either repeats at 0 or finishes at 3. There is no edge from 2 directly to 3, so at least one a must be consumed.

@@ -10,10 +10,12 @@ The existing [regex-to-NFA-to-DFA tutorial](../tutorial.md) is the shorter start
 
 The active [Practica3Main example](../../src/Practica3/Practica3Main.java#L10-L23) asks for an equivalent DFA, constructs `(a.b|a*.c)+`, and prints the NFA followed by its conversion. The block-language explanation here is supplemental reasoning from that expression.
 
-~~~text
-one block =  a then b       OR       zero or more a, then c
-whole word = one or more complete blocks
-~~~
+Read the figure: each branch completes one block before finishing or repeating. The boxes show expression blocks, not individual NFA states.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="Practica 3: repeat ab or an a-star-c block, scrollable diagram" style="--diagram-width: 768px">
+  <img class="diagram" src="/JAutomata/diagrams/practica3-blocks.svg" alt="Choose ab or zero or more a followed by c; finish after one complete block or repeat another block. Every block consumes input.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/practica3-blocks.svg">Open full-size diagram</a></p>
 
 Examples of single blocks are `ab`, `c`, `ac` and `aac`. `abc` splits into `ab` followed by `c`; `acab` splits into `ac` followed by `ab`. Every block consumes at least one character, so the outer plus cannot accept empty input. The nullable inner `a*` is only part of the second block and does not remove its required `c`.
 

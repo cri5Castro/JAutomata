@@ -1,0 +1,1 @@
+Start 0 consumes a to reach accepting state 1. A separate, unreachable state 9 has a z self-loop. No edge connects the two components. Both a and z belong to the source alphabet, although only a is accepted.

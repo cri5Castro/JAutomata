@@ -21,14 +21,12 @@ The construction wraps one completed operand in two fresh states. For `a*`, the 
 | `1 --ε--> 0` | Repeat after completing an operand word |
 | `1 --ε--> 3` | Finish after completing an operand word |
 
-~~~text
-                   +-------- ε bypass --------+
-                   |                          v
-start 2 --ε--> 0 --a--> 1 --------ε-----------> 3 final
-               ^        |
-               +--- ε --+
-                  repeat
-~~~
+**Read the figure:** Find the `ε: bypass` route first, then follow one `a` and choose repeat or finish. Double circles mark the only final state.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="Kleene star: enter, repeat, finish or bypass, scrollable diagram" style="--diagram-width: 920px">
+  <img class="diagram" src="/JAutomata/diagrams/kleene-star.svg" alt="Start 2 can bypass by epsilon to final 3, or enter 0, consume a to 1, then repeat at 0 or finish at 3.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/kleene-star.svg">Open full-size diagram</a></p>
 
 The wrapper's entry has no incoming edges and its exit has no outgoing edges. The child's boundaries become internal and acquire the connections needed for repetition. The enclosing fragment still has one entry and one exit.
 
@@ -59,6 +57,13 @@ An expression is **nullable** when it accepts the empty word. A star is always n
 There can be infinitely many graph walks through such a cycle, but only finitely many reachable states. Recognition needs the reachable states, not a separate record of every walk. The delivered epsilon-closure algorithm keeps a visited set, so reaching an already visited state does not restart its exploration forever.
 
 For this compiler's `(a*)*` graph, the inner bypass is `2 --ε--> 3` and the outer repeat edge is `3 --ε--> 2`. Starting from outer entry `4` reaches `{0, 2, 3, 4, 5}` without consuming input. It cannot reach state `1` until an `a` is consumed. The tutorial checks both the cycle and these exact sets.
+
+Read the figure: this is the full nested-star graph. Trace the labeled inner bypass and outer repeat to find the `2 → 3 → 2` epsilon cycle.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="Nested star: a complete graph with an epsilon cycle, scrollable diagram" style="--diagram-width: 1160px">
+  <img class="diagram" src="/JAutomata/diagrams/nested-star.svg" alt="Full (a*)* graph: start 4 reaches the epsilon cycle 2 to 3 to 2 and final 5 without input; only 0 to 1 consumes a.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/nested-star.svg">Open full-size diagram</a></p>
 
 ## Predict before revealing
 

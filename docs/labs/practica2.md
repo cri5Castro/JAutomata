@@ -12,12 +12,12 @@ The active [Practica2 example](../../src/Practica2/Practica2.java#L9-L15) aims t
 
 Read the expression in blocks:
 
-~~~text
-choose one prefix:       then append:
-  (b c d), repeated zero or more times ─┐
-                                       ├── f
-  one or more f, followed by a ─────────┘
-~~~
+Read the figure: choose either prefix, then consume the final `f`. The boxes show expression blocks, not individual NFA states.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="Practica 2: choose a prefix, then consume f, scrollable diagram" style="--diagram-width: 744px">
+  <img class="diagram" src="/JAutomata/diagrams/practica2-prefixes.svg" alt="Choose zero or more bcd blocks, or one or more f then a; either prefix must be followed by the final f.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/practica2-prefixes.svg">Open full-size diagram</a></p>
 
 In mathematical shorthand, the words are `(bcd)^k f` for `k ≥ 0`, or `f^j a f` for `j ≥ 1`. An exponent means repetition count, not arithmetic multiplication. Both alternatives must still consume the final `f` outside the union.
 

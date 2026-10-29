@@ -1,0 +1,1 @@
+Machine A starts at 0 and consumes a to final 1. Separate machine B starts at 10 and consumes a to final 11. Renaming 0 to 10 and 1 to 11 changes the start, final set and both edge endpoints consistently; both machines accept only a.

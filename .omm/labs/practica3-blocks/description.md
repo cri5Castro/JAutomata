@@ -1,0 +1,1 @@
+Block-language guide for (a.b|a*.c)+, not the full fourteen-state Thompson graph. One block is either ab or zero or more a characters followed by c. A complete word contains one or more complete blocks. Even when a-star contributes no characters, its c is required, so every block is nonempty.

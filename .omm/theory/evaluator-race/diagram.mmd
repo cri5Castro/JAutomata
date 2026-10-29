@@ -1,0 +1,9 @@
+sequenceDiagram
+  participant Main as Main evaluator
+  participant Worker as Branch worker
+  participant Flags as Shared flags
+  Main-)Worker: Start branch
+  Note over Worker: Still running
+  Main->>Flags: Check accepted = false
+  Main->>Flags: Reset flags
+  Worker->>Flags: Set accepted = true (late)

@@ -1,0 +1,10 @@
+flowchart LR
+  subgraph reachable["Reachable from start"]
+    direction LR
+    start["start"] --> q0(("0"))
+    q0 -->|a| q1((("1")))
+  end
+  subgraph disconnected["Unreachable from start"]
+    q9(("9")) -->|z| q9
+  end
+  style start fill:none,stroke:none

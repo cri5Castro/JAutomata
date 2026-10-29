@@ -14,10 +14,12 @@ For example, `{a}{b} = {ab}`. Reversing the operands gives `{ba}`, a different l
 
 The Thompson rule connects the left fragment's exit to the right fragment's entry with an epsilon edge. The result keeps the left entry and the right exit:
 
-~~~text
-left fragment          connector          right fragment
-start 0 --a--> 1 --------- ε ---------> 2 --b--> 3 final
-~~~
+**Read the figure:** Follow left to right: consume `a`, cross the free `ε` seam, then consume `b`. Double circles mark accepting states.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="Concatenation: a then b, scrollable diagram" style="--diagram-width: 747px">
+  <img class="diagram" src="/JAutomata/diagrams/concatenation.svg" alt="Start 0 consumes a to 1, follows epsilon to 2, then consumes b to accepting state 3.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/concatenation.svg">Open full-size diagram</a></p>
 
 An epsilon edge advances through the graph without consuming a character. It lets the machine finish the left word before starting the right word. No fresh wrapper states are needed for this rule, but the two operand fragments must already have disjoint state IDs.
 
@@ -39,10 +41,12 @@ The word `a` rejects because neither `1` nor `2` is final. The word `b` rejects 
 
 The historical Java source contains both an epsilon-link operation and an endpoint-fusion operation. The Python compiler chooses the epsilon-link variant. For two literal fragments, a carefully constructed fused diagram looks like this:
 
-~~~text
-epsilon link:  0 --a--> 1 --ε--> 2 --b--> 3
-fused seam:    0 --a--> X --------b-----> 3
-~~~
+**Read the figure:** Compare one graph at a time. The `ε` seam keeps two states; the fused seam uses a single state `X`.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="Two seams, the same word ab, scrollable diagram" style="--diagram-width: 683px">
+  <img class="diagram" src="/JAutomata/diagrams/concatenation-seams.svg" alt="Compare the four-state epsilon-linked a.b graph with a separate three-state graph whose seam is X; both finish at 3.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/concatenation-seams.svg">Open full-size diagram</a></p>
 
 Both diagrams recognize `ab`. They do not have the same graph structure: the first has four states and three edges; the second has three states and two edges. Equality of languages does not require equality of graphs.
 

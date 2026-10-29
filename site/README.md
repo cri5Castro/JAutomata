@@ -13,19 +13,34 @@ dependency to `jautomata` itself.
 
 ## Run locally
 
-1. From this directory, run `npm ci`.
+1. From this directory, run `PUPPETEER_SKIP_DOWNLOAD=true npm ci`.
 2. Run `npm run dev` and open the local address Astro prints.
-3. Run `npm run build` for the GitHub Pages production output.
-4. Run `npm run preview` to inspect that output locally.
+
+Development serves the committed static diagram assets. Before checks or a
+production build, install the pinned Chromium used by both the local diagram
+renderer and Playwright:
+
+~~~sh
+npm exec playwright install chromium
+npm run test:diagrams
+npm run check
+npm run build
+npm run preview
+~~~
+
+On Linux, use `npm exec playwright install --with-deps chromium` when browser
+system libraries are absent. `PUPPETEER_SKIP_DOWNLOAD=true` avoids a second browser
+download. If you choose a custom `PLAYWRIGHT_BROWSERS_PATH`, use the same value
+during installation and all rendering, checks, builds, and browser tests. See the
+[canonical diagram guide](../.omm/README.md) for source editing, regeneration,
+exact freshness checks, and the optional local OMM viewer.
 
 ## Verify the built site
 
-After `npm run build`, install Chromium outside the repository and run the browser
-and static-output checks:
+After `npm run build`, run the browser and static-output checks:
 
 ~~~sh
-PLAYWRIGHT_BROWSERS_PATH=/private/tmp/jautomata-playwright npm exec playwright install chromium
-PLAYWRIGHT_BROWSERS_PATH=/private/tmp/jautomata-playwright npm run test:e2e
+npm run test:e2e
 npm run test:links
 ~~~
 
@@ -34,8 +49,7 @@ npm run test:links
 To smoke-test a published site instead, provide its complete subpath URL:
 
 ~~~sh
-PLAYWRIGHT_BASE_URL=https://cri5castro.github.io/JAutomata/ \\
-  PLAYWRIGHT_BROWSERS_PATH=/private/tmp/jautomata-playwright npm run test:e2e
+PLAYWRIGHT_BASE_URL=https://cri5castro.github.io/JAutomata/ npm run test:e2e
 ~~~
 
 The checks include targeted automated axe scans, not a claim of complete WCAG

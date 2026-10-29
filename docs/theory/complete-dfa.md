@@ -18,11 +18,12 @@ The alphabet `Σ` is a finite set of consuming labels. In this model it is deriv
 
 Consider this NFA, with start 0 and final state 1:
 
-~~~text
-(start) 0 --a--> 1 (final)
+**Read the figure:** Compare the two separate components. The `z` loop contributes to the alphabet even though the start cannot reach it.
 
-        9 --z--> 9        [unreachable from 0]
-~~~
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="The alphabet includes unreachable edges, scrollable diagram" style="--diagram-width: 443px">
+  <img class="diagram" src="/JAutomata/diagrams/complete-alphabet.svg" alt="Start 0 reaches accepting state 1 on a. Disconnected state 9 loops on z, so the source alphabet is {a, z}.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/complete-alphabet.svg">Open full-size diagram</a></p>
 
 Its alphabet is `{a, z}` because both labels occur in the source graph. State 9 is unreachable, but its label still contributes to the source alphabet. The language is just the one-character word `a`; this is an inference from the graph.
 

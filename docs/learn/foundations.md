@@ -27,6 +27,13 @@ it.
 For the language containing only `"a"`, use `Q = {0, 1}`, `q0 = 0`,
 `F = {1}`, and `0 --a--> 1`.
 
+Read the figure: the start arrow enters 0; one `a` reaches double-circle final 1.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="One literal, two states, scrollable diagram" style="--diagram-width: 442px">
+  <img class="diagram" src="/JAutomata/diagrams/literal.svg" alt="Start state 0 consumes one a to reach double-circle accepting state 1.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/literal.svg">Open full-size diagram</a></p>
+
 | Input | Active states after the next character | Accept? |
 |---|---|---|
 | `""` | `{0}` | no: `0` is not final |

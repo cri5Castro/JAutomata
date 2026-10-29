@@ -1,0 +1,4 @@
+flowchart LR
+  original["Original list"] -->|reference| state["Mutable state"]
+  copied["Copied list"] -->|same object| state
+  state -->|reference| transition["Mutable transition"]

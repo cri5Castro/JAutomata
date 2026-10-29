@@ -112,6 +112,13 @@ This explains why `a+` rejects only the zero-length all-`a` word while accepting
 
 The absence of the direct outer bypass in `(a*)+` is an explicit assertion. The program then verifies each edge in this alternative path:
 
+**Read the figure:** Follow this **one accepting path** through `(a*)+`; other states and edges are omitted. Each shown edge consumes nothing.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="One empty-word path through (a*)+, scrollable diagram" style="--diagram-width: 981px">
+  <img class="diagram" src="/JAutomata/diagrams/nullable-positive-path.svg" alt="One path in (a*)+ follows epsilon from start 4 through 2 and 3 to final 5, consuming nothing; other states and edges are omitted.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/nullable-positive-path.svg">Open full-size diagram</a></p>
+
 | Step | Edge | Meaning | Characters consumed |
 | --- | --- | --- | --- |
 | 1 | `4 --ε--> 2` | enter the inner star operand | zero |

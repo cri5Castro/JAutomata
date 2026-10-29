@@ -10,6 +10,13 @@ Work in four short passes: predict, trace, run, interpret. You can stop after an
 
 We use `None` for epsilon. Our graph contains the cycle 0 → 1 → 2 → 0 and epsilon self-loops at 1 and 5. The edge 2 → 3 consumes `a`.
 
+**Read the figure:** Begin at `0` and follow only `ε` arrows. Keep the `a` edge and the separate component out of that closure.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="Epsilon closure with cycles and separate components, scrollable diagram" style="--diagram-width: 752px">
+  <img class="diagram" src="/JAutomata/diagrams/theory-epsilon-closure.svg" alt="Epsilon cycles connect 0, 1 and 2; reaching final 3 requires a. Separate state 4 reaches final 5 by epsilon, and 1 and 5 have epsilon self-loops.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/theory-epsilon-closure.svg">Open full-size diagram</a></p>
+
 | Source | Label | Target |
 | --- | --- | --- |
 | 0 | ε | 1 |

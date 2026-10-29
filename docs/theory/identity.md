@@ -24,11 +24,12 @@ Two calls to `compile_regex("a")` return distinct objects with equal values. The
 
 An alias is another reference to an existing object. Copying a container can leave its elements shared:
 
-~~~text
-original list ──┐
-               ├── shared mutable state ── shared mutable transition
-copied list ───┘
-~~~
+**Read the figure:** Follow both list references to the same object. These arrows represent references between objects.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="Two collections share the same mutable objects, scrollable diagram" style="--diagram-width: 823px">
+  <img class="diagram" src="/JAutomata/diagrams/shared-identity.svg" alt="Original and copied lists point to the same mutable state, which refers to a mutable transition; arrows represent shared references.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/shared-identity.svg">Open full-size diagram</a></p>
 
 The historical Java helper calls its action a copy, but `copiarEstados` inserts existing state objects. The transition helpers reuse transition objects and change their origins. Mutating a shared object is visible through every alias to it. This is a source-flow observation, not a new execution of the Java program.
 
@@ -44,11 +45,14 @@ An ordinary mutable `set` is unhashable. A `frozenset` of integers is hashable a
 
 ## Worked trace: rename every state
 
-Consider two machines whose only final state is marked `*`:
+Consider two machines whose only final state is marked by a double circle:
 
-~~~text
-A: start 0 ──a──> 1*       B: start 10 ──a──> 11*
-~~~
+**Read the figure:** Compare the two machines. The labels change from `0, 1` to `10, 11`; the consuming edge and accepting role stay the same.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="Rename states and preserve the language, scrollable diagram" style="--diagram-width: 454px">
+  <img class="diagram" src="/JAutomata/diagrams/relabeling.svg" alt="Machine A is start 0 to final 1 on a; machine B is start 10 to final 11 on a, with all state references renamed consistently.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/relabeling.svg">Open full-size diagram</a></p>
 
 The renaming sends `0 → 10` and `1 → 11`. It must change the start, final set, and both endpoints of every edge.
 

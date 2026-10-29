@@ -1,0 +1,1 @@
+Block-language guide for ((b.c.d)*|f+.a).f, not the full eighteen-state Thompson graph. Choose either zero or more complete bcd blocks, or one or more f characters followed by a. Then both choices must consume the final f. Choosing zero bcd blocks accepts the one-letter word f; the final f prevents empty input from accepting.

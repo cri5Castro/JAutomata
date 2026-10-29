@@ -14,20 +14,14 @@ The language description below is **inferred from the graph**, not stated by tha
 
 ## Reconstruct the graph
 
-`*` marks a final state. `ε` means consume no character.
+A double circle marks a final state. `ε` means consume no character.
 
-~~~text
-                         1
-                 2 ───────────> 3*
-                 ^ <───────────┘
-                ε       1
-               /
-start 1 ──────┤
-               \ ε       0          0
-                 4 ─────────> 5 ─────────> 6*
-                 └──────────ε────────────> ^
-                 <──────────ε──────────────┘
-~~~
+Read the figure: follow the upper branch for ones and the lower branch for zeros. Double circles mark final states; epsilon edges consume nothing.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="Practica 1: odd ones or even zeros, scrollable diagram" style="--diagram-width: 790px">
+  <img class="diagram" src="/JAutomata/diagrams/practica1-language.svg" alt="Start 1 branches by epsilon to the odd-ones cycle 2–3 and even-zeros branch 4–5–6. Finals 3 and 6 are double circles; 4 and 6 form an epsilon cycle.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/practica1-language.svg">Open full-size diagram</a></p>
 
 The exact transition list is the authoritative reading of the diagram:
 

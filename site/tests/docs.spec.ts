@@ -187,3 +187,76 @@ test('learning map and a capstone remain navigable without JavaScript', async ({
   await expect(page.getByRole('heading', { name: /Main: turn historical experiments/i }).first()).toBeVisible();
   await context.close();
 });
+
+test('dense diagrams load in both themes without widening the page', async ({ page }, testInfo) => {
+  for (const colorScheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme });
+    for (const path of ['theory/union/', 'theory/kleene-star/', 'theory/pure-execution/', 'labs/main/', 'learn/subset-construction/', 'architecture/']) {
+      await page.goto(route(path));
+      await expect(page.locator('html')).toHaveAttribute('data-theme', colorScheme);
+      const images = page.locator('img.diagram');
+      expect(await images.count()).toBeGreaterThan(0);
+      for (const image of await images.all()) {
+        await expect(image).toBeVisible();
+        await expect(image).toHaveAttribute('alt', /\S.{20}/);
+        await expect.poll(() => image.evaluate((element) => {
+          const image = element as HTMLImageElement;
+          return image.complete && image.naturalWidth > 0;
+        })).toBeTruthy();
+      }
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+      for (const panel of await page.locator('.diagram-scroll').all()) {
+        await expect(panel).toHaveAttribute('tabindex', '0');
+        await expect(panel).toHaveAttribute('role', 'region');
+        await expect(panel).toHaveAttribute('aria-label', /\S/);
+        expect(await panel.evaluate((element) => getComputedStyle(element).backgroundColor)).toBe('rgb(255, 255, 255)');
+      }
+    }
+    const scan = await new AxeBuilder({ page }).include('main').analyze();
+    await testInfo.attach(`axe-diagram-${colorScheme}`, { body: JSON.stringify(scan, null, 2), contentType: 'application/json' });
+    expect(scan.violations).toEqual([]);
+  }
+});
+
+test('narrow diagram panels scroll by keyboard and expose a full-size image', async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 800 });
+  await page.goto(route('learn/subset-construction/'));
+  const panel = page.locator('.diagram-scroll').first();
+  const link = page.locator('.diagram-link').first();
+  await expect(link).toContainText('Scroll sideways when needed.');
+  expect(await panel.evaluate((element) => element.scrollWidth > element.clientWidth)).toBeTruthy();
+  // Start at the following link and use real Tab order to enter the panel.
+  await link.getByRole('link', { name: 'Open full-size diagram' }).focus();
+  await page.keyboard.press('Shift+Tab');
+  await expect(panel).toBeFocused();
+  expect(await panel.evaluate((element) => Number.parseFloat(getComputedStyle(element).outlineWidth))).toBeGreaterThanOrEqual(2);
+  await page.keyboard.press('ArrowRight');
+  await expect.poll(() => panel.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0);
+  await page.keyboard.press('Tab');
+  await expect(link.getByRole('link')).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/\/JAutomata\/diagrams\/subset-construction\.svg$/);
+  await expect(page.locator('svg[role="img"]')).toBeVisible();
+  expect(await page.locator('svg > title').textContent()).toMatch(/DFA|subset/i);
+});
+
+test('wide static figures and full-size links work without JavaScript', async ({ browser, baseURL }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 360, height: 800 }, colorScheme: 'dark' });
+  try {
+    const page = await context.newPage();
+    for (const path of ['theory/pure-execution/', 'labs/main/', 'learn/subset-construction/']) {
+      await page.goto(new URL(path, baseURL).toString());
+      for (const image of await page.locator('img.diagram').all()) {
+        await expect(image).toBeVisible();
+        await expect(image).toHaveAttribute('alt', /\S.{20}/);
+        expect(await image.evaluate((element) => (element as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+      }
+      await expect(page.locator('.diagram-link').first()).toContainText('Scroll sideways when needed.');
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+    }
+    await page.getByRole('link', { name: 'Open full-size diagram' }).first().click();
+    await expect(page.locator('svg[role="img"]')).toBeVisible();
+  } finally {
+    await context.close();
+  }
+});

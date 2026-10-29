@@ -12,10 +12,12 @@ A **literal** stands for itself. The expression `a` describes the language `{a}`
 
 Thompson construction builds a small graph for each expression and connects those graphs. For a literal, create two distinct states and connect them with the literal character:
 
-~~~text
-entry / start                  exit / final
-     0 ----------- a -------------> 1
-~~~
+**Read the figure:** Follow the single `a` arrow from the start to the double-circle final state.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="One literal, two states, scrollable diagram" style="--diagram-width: 443px">
+  <img class="diagram" src="/JAutomata/diagrams/literal.svg" alt="Start state 0 consumes one a to reach double-circle accepting state 1.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/literal.svg">Open full-size diagram</a></p>
 
 The arrow consumes exactly one `a`. State `0` is the start; state `1` is the only final state of this completed machine. With no input, the machine remains at `0` and rejects. After reading `a`, it reaches `1` and accepts. Another character cannot be consumed because `1` has no outgoing edge.
 

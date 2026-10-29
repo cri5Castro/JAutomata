@@ -37,15 +37,23 @@ jobs:
           uv run --project python python python/scripts/generate_api_docs.py --check
           uv run --project python python python/scripts/generate_teaching_traces.py --check
       - name: Install site dependencies
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: 'true'
         run: npm ci
-      - name: Check and build site serially
-        run: |
-          npm run check
-          npm run build
-      - name: Install Chromium for Playwright
+      - name: Install Chromium for diagrams and Playwright
         env:
           PLAYWRIGHT_BROWSERS_PATH: /tmp/jautomata-playwright
         run: npm exec playwright install --with-deps chromium
+      - name: Verify diagram generator and renderer
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: /tmp/jautomata-playwright
+        run: npm run test:diagrams
+      - name: Check and build site serially
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: /tmp/jautomata-playwright
+        run: |
+          npm run check
+          npm run build
       - name: Run production browser checks
         env:
           PLAYWRIGHT_BROWSERS_PATH: /tmp/jautomata-playwright

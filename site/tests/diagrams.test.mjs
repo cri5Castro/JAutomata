@@ -1,0 +1,137 @@
+import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
+import { mkdtemp, mkdir, readFile, writeFile, rm, copyFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { dirname, join } from 'node:path';
+import { test } from 'node:test';
+import { listNodes, readNodeField, validateDiagram } from 'oh-my-mermaid';
+import { checkedSvg, compareSvg, generateDiagrams, loadCatalog, repository } from '../scripts/diagrams.mjs';
+
+const hash = (text) => createHash('sha256').update(text).digest('hex');
+const sample = '<svg id="literal" viewBox="0 0 100 50"><path d="M0,10L30,40" stroke="red"/><text x="5">state 10</text></svg>\n';
+
+test('geometry tolerance preserves labels, styles, IDs, edge commands, and large movement', () => {
+  assert(compareSvg(sample, sample.replace('M0,10', 'M0.1,10.2')).equal);
+  for (const changed of [
+    sample.replace('state 10', 'state 11'),
+    sample.replace('red', 'blue'),
+    sample.replace('literal', 'different'),
+    sample.replace('M0,10L30,40', 'M0,10M30,40'),
+    sample.replace('M0,10', 'M1,10'),
+    sample.replace('<path', '<circle'),
+  ]) assert.equal(compareSvg(sample, changed).equal, false);
+  assert.equal(compareSvg(sample, sample.replace('M0,10', 'M0.1,10'), 0).equal, false);
+});
+
+test('fingerprint rejects source/config drift and generated payload edits', () => {
+  const input = hash('source and config');
+  const file = `<!-- jautomata-diagram input:${input} svg:${hash(sample)} -->\n${sample}`;
+  assert.equal(checkedSvg(file, input), sample);
+  assert.throws(() => checkedSvg(file, hash('new source')), /changed/);
+  assert.throws(() => checkedSvg(file.replace('state 10', 'state 11'), input), /was edited/);
+  assert.throws(() => checkedSvg(sample, input), /metadata is missing/);
+});
+
+test('coordinate tolerance never applies to similarly named attributes or style properties', () => {
+  const svg = '<svg width="100" height="50" style="max-width: 100px; stroke-width: 1; --max-width: 100px" data-width="100" data-style="max-width: 100px"><path stroke-width="1"/><text>state 10</text></svg>';
+  for (const [before, after] of [
+    ['width="100"', 'width="100.1"'],
+    ['height="50"', 'height="50.1"'],
+    ['style="max-width: 100px', 'style="max-width: 100.1px'],
+  ]) assert(compareSvg(svg, svg.replace(before, after)).equal, before);
+  for (const [before, after] of [
+    ['stroke-width="1"', 'stroke-width="1.2"'],
+    ['stroke-width: 1', 'stroke-width: 1.2'],
+    ['data-width="100"', 'data-width="100.1"'],
+    ['data-style="max-width: 100px"', 'data-style="max-width: 100.1px"'],
+    ['--max-width: 100px', '--max-width: 100.1px'],
+    ['state 10', 'state 10.1'],
+  ]) assert.equal(compareSvg(svg, svg.replace(before, after)).equal, false, before);
+  for (const exact of [
+    '<svg><text> width="1" </text></svg>',
+    '<svg><style>.node { stroke-width: 1; }</style></svg>',
+    '<svg data-label=\' width="1" \'/>',
+    '<svg aria-label=" width=&quot;1&quot; "/>',
+    '<svg><text><![CDATA[<node width="1">]]></text></svg>',
+    '<svg><!-- <node width="1"> --></svg>',
+  ]) assert.equal(compareSvg(exact, exact.replace('1', '1.2')).equal, false, exact);
+});
+
+async function fixture() {
+  const root = await mkdtemp(join(tmpdir(), 'jautomata-diagrams-'));
+  const put = async (path, text) => { await mkdir(dirname(join(root, path)), { recursive: true }); await writeFile(join(root, path), text); };
+  await mkdir(join(root, 'site/public/diagrams'), { recursive: true });
+  await mkdir(join(root, '.omm'), { recursive: true });
+  for (const path of ['.omm/renderer.json', 'site/package-lock.json']) {
+    await mkdir(dirname(join(root, path)), { recursive: true });
+    await copyFile(join(repository, path), join(root, path));
+  }
+  const figures = ['flow', 'sequence'].map((id) => ({
+    id, source: `.omm/theory/${id}/diagram.mmd`, description: `.omm/theory/${id}/description.md`,
+    asset: `site/public/diagrams/${id}.svg`, title: `${id} fixture`,
+    provenance: [{ path: 'docs/fixture.md', note: 'Synthetic renderer regression fixture; not a lesson.' }],
+    placements: [{ path: 'docs/fixture.md', alt: `${id} alternative` }],
+  }));
+  await put('.omm/manifest.json', JSON.stringify({ version: 1, figures }));
+  await put('docs/fixture.md', figures.map((f) => `<img class="diagram" src="/JAutomata/diagrams/${f.id}.svg" alt="${f.id} alternative">`).join('\n'));
+  await put(figures[0].source, 'flowchart LR\n  A((Start)) -->|ε| B(((Accept)))\n');
+  await put(figures[1].source, 'sequenceDiagram\n  participant A as Evaluator\n  participant B as Worker\n  A->>B: Start\n  B-->>A: Result\n');
+  for (const figure of figures) await put(figure.description, `${figure.title}: a static accessible test figure.`);
+  return { root, figures, put, cleanup: () => rm(root, { recursive: true, force: true }) };
+}
+
+test('catalog enumerates nested OMM nodes and rejects omissions, duplicates, and incorrect placements', async () => {
+  const { root, figures, put, cleanup } = await fixture();
+  try {
+    assert.equal((await loadCatalog(root)).figures.length, 2);
+    assert.deepEqual(listNodes('theory', [], root), ['flow', 'sequence']);
+    assert.match(readNodeField('theory', ['flow'], 'diagram', root), /flowchart LR/);
+    await put('.omm/manifest.json', JSON.stringify({ version: 1, figures: [figures[0]] }));
+    await assert.rejects(loadCatalog(root), /Every nested/);
+    await put('.omm/manifest.json', JSON.stringify({ version: 1, figures: [figures[0], figures[0]] }));
+    await assert.rejects(loadCatalog(root), /duplicate figure id/);
+    await put('.omm/manifest.json', JSON.stringify({ version: 1, figures }));
+    await put('docs/fixture.md', '<img src="/diagrams/flow.svg" alt="wrong">');
+    await assert.rejects(loadCatalog(root), /missing img.diagram/);
+  } finally { await cleanup(); }
+});
+
+test('real renderer produces repeatable accessible flowchart and sequence SVGs, then catches drift and invalid Mermaid', { timeout: 120000 }, async () => {
+  const { root, figures, put, cleanup } = await fixture();
+  const options = { root, log: () => {} };
+  try {
+    await generateDiagrams(options);
+    const originals = await Promise.all(figures.map((figure) => readFile(join(root, figure.asset), 'utf8')));
+    const first = await readFile(join(root, figures[0].asset), 'utf8');
+    assert.match(first, /aria-labelledby="flow-title flow-description"/);
+    assert.match(first, /<title id="flow-title">flow fixture<\/title>/);
+    assert.match(first, /<desc id="flow-description">/);
+    assert.match(first, /data:font\/woff2;base64,/);
+    assert.doesNotMatch(first, /data-points=/);
+    await generateDiagrams({ ...options, check: true, exact: true });
+    // A clean checkout has no OMM history/cache or pre-existing output to reuse.
+    for (const figure of figures) await rm(join(root, figure.asset));
+    await generateDiagrams(options);
+    for (const [index, figure] of figures.entries()) {
+      const regenerated = await readFile(join(root, figure.asset), 'utf8');
+      assert.equal(regenerated, originals[index], `${figure.id}: clean output regeneration must preserve bytes and IDs`);
+      assert.match(regenerated, new RegExp(`aria-labelledby="${figure.id}-title ${figure.id}-description"`));
+      assert.doesNotMatch(regenerated, /<(?:script|foreignObject)\b/);
+    }
+    await put(figures[0].source, 'flowchart LR\n  A((Changed)) -->|ε| B(((Accept)))\n');
+    await assert.rejects(generateDiagrams({ ...options, check: true }), /changed; regenerate/);
+    // OMM intentionally cannot validate sequence syntax. The actual renderer must reject it.
+    await put(figures[1].source, 'sequenceDiagram\n  invalid ???\n');
+    assert.equal((await loadCatalog(root)).figures.length, 2);
+    await assert.rejects(generateDiagrams(options), /Parse error|Syntax error|Lexical error/);
+    assert.equal(hash(await readFile(join(root, figures[0].asset), 'utf8')), hash(first), 'failed generation must not replace earlier assets');
+    // Balanced brackets alone do not establish valid Mermaid grammar either.
+    const invalidFlow = 'flowchart LR\n  A[Start] --> B[End]\n  invalid ???\n';
+    assert.equal(validateDiagram(invalidFlow).valid, true);
+    await put('.omm/manifest.json', JSON.stringify({ version: 1, figures: [figures[0]] }));
+    await rm(join(root, '.omm/theory/sequence'), { recursive: true });
+    await rm(join(root, figures[1].asset));
+    await put(figures[0].source, invalidFlow);
+    await assert.rejects(generateDiagrams(options), /Parse error|Syntax error|Lexical error/);
+  } finally { await cleanup(); }
+});

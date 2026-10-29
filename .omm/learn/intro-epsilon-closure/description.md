@@ -1,0 +1,1 @@
+Complete three-state introductory NFA. Start 0 and state 1 reach each other by epsilon, so the closure of {0} is {0, 1}. State 1 consumes a to reach the sole accepting state 2. The graph accepts a but not empty input. This is the small cycle example, distinct from the six-state theory closure figure.

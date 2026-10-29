@@ -1,0 +1,13 @@
+flowchart LR
+  subgraph original["Machine A"]
+    direction LR
+    startA["start"] --> a0(("0"))
+    a0 -->|a| a1((("1")))
+  end
+  subgraph renamed["Machine B: 0 → 10, 1 → 11"]
+    direction LR
+    startB["start"] --> b10(("10"))
+    b10 -->|a| b11((("11")))
+  end
+  style startA fill:none,stroke:none
+  style startB fill:none,stroke:none

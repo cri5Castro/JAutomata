@@ -21,6 +21,13 @@ The shorthand is `next = C(move(current, a))`. The current set is already closed
 
 Our six-state example starts at 0 and has final states 4 and 5.
 
+**Read the figure:** Start at `0`; keep both direct `a` branches and the `ε` route to `1`. Double circles mark finals `4` and `5`.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="Three ways to consume a, then follow b, scrollable diagram" style="--diagram-width: 596px">
+  <img class="diagram" src="/JAutomata/diagrams/competing-paths.svg" alt="Start 0 has epsilon to 1 and a edges to 2 and 3; 1 has a to final 5, 3 has epsilon to final 4, 2 has b to 5, and 4 loops on b.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/competing-paths.svg">Open full-size diagram</a></p>
+
 | Source | Label | Target | Why it matters |
 | --- | --- | --- | --- |
 | 0 | ε | 1 | A free alternative before consuming |

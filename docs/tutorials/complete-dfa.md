@@ -10,10 +10,12 @@ A count of transitions is useful but insufficient: a duplicate destination choic
 
 Start at 0 and make 1 final. State 9 is disconnected from the start:
 
-~~~text
-(start) 0 --a--> 1 (final)
-        9 --z--> 9        [unreachable]
-~~~
+**Read the figure:** Compare the two separate components. The `z` loop contributes to the alphabet even though the start cannot reach it.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="The alphabet includes unreachable edges, scrollable diagram" style="--diagram-width: 443px">
+  <img class="diagram" src="/JAutomata/diagrams/complete-alphabet.svg" alt="Start 0 reaches accepting state 1 on a. Disconnected state 9 loops on z, so the source alphabet is {a, z}.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/complete-alphabet.svg">Open full-size diagram</a></p>
 
 Predict the source alphabet, whether empty input accepts, and whether conversion includes a `z` transition from every returned state.
 

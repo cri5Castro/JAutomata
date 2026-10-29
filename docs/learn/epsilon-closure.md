@@ -21,7 +21,12 @@ Suppose `0 --ε--> 1`, `1 --ε--> 0`, and `1 --a--> 2`, where `2` is final.
 2. On `a`, move from every active state. Only `1` reaches `{2}`.
 3. Close `{2}`. It stays `{2}`, which intersects the final set, so accept.
 
-<img class="diagram" src="/JAutomata/diagrams/epsilon-closure.svg" alt="States 0 and 1 form an epsilon cycle; state 1 has an a transition to accepting state 2." />
+Read the figure: close the epsilon cycle first, then follow the consuming `a` edge to final 2.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="Epsilon closure: visit a cycle, then consume a, scrollable diagram" style="--diagram-width: 593px">
+  <img class="diagram" src="/JAutomata/diagrams/epsilon-closure.svg" alt="Start 0 and state 1 form an epsilon cycle; state 1 consumes a to reach double-circle final 2." />
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/epsilon-closure.svg">Open full-size diagram</a></p>
 
 | Moment | Active states | Why |
 | --- | --- | --- |

@@ -1,0 +1,1 @@
+The complete literal a fragment has two states. Start state 0 consumes exactly one a to reach the only accepting state, double-circle state 1. There are no epsilon edges, loops or outgoing edges from 1.

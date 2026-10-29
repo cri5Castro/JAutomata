@@ -1,0 +1,1 @@
+The six-state graph starts at 0 and has accepting states 3 and 5. Epsilon edges form 0 to 1 to 2 to 0, with a self-loop at 1. The edge from 2 to 3 consumes a. In a separate component, 4 reaches 5 by epsilon and 5 has an epsilon self-loop. Closure of seed 0 is {0, 1, 2}. This richer theory example is distinct from the three-state introductory epsilon-closure figure.

@@ -1,0 +1,1 @@
+The six-state NFA starts at 0 and accepts at 4 or 5. From 0, epsilon reaches 1, and two a edges reach 2 and 3. State 1 also consumes a to 5. Epsilon connects 3 to 4, b connects 2 to 5, and 4 has a b self-loop. All seven transitions are shown; the direct a branches and the epsilon alternative coexist.

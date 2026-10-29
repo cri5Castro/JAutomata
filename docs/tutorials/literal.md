@@ -26,6 +26,13 @@ Before running, sketch a machine for the expression `a`. It must accept only the
 
 The current allocator starts at `0`, so this compilation produces `0 --a--> 1`. State `0` is the entry/start and `1` is the exit/final. Exact IDs are a way to inspect this implementation; acceptance does not depend on those particular numbers.
 
+**Read the figure:** Follow the single `a` arrow from the start to the double-circle final state.
+
+<div class="diagram-scroll" tabindex="0" role="region" aria-label="One literal, two states, scrollable diagram" style="--diagram-width: 443px">
+  <img class="diagram" src="/JAutomata/diagrams/literal.svg" alt="Start state 0 consumes one a to reach double-circle accepting state 1.">
+</div>
+<p class="diagram-link">Scroll sideways when needed. <a href="/JAutomata/diagrams/literal.svg">Open full-size diagram</a></p>
+
 ## 2. Run the complete experiment
 
 ~~~python
