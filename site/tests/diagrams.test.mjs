@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { mkdtemp, mkdir, readFile, writeFile, rm, copyFile } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, writeFile, rm, copyFile, readdir } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { test } from 'node:test';
@@ -11,7 +11,12 @@ const hash = (text) => createHash('sha256').update(text).digest('hex');
 const sample = '<svg id="literal" viewBox="0 0 100 50"><path d="M0,10L30,40" stroke="red"/><text x="5">state 10</text></svg>\n';
 
 test('geometry tolerance preserves labels, styles, IDs, edge commands, and large movement', () => {
-  assert(compareSvg(sample, sample.replace('M0,10', 'M0.1,10.2')).equal);
+  const drift = compareSvg(sample, sample.replace('M0,10', 'M0.1,10.2'));
+  assert(drift.equal);
+  assert.deepEqual(drift.largestChanges[0], {
+    element: 'path', id: null, tagOffset: sample.indexOf('<path'), attribute: 'd', component: 1,
+    committed: 10, rendered: 10.2, delta: Math.abs(10 - 10.2),
+  });
   for (const changed of [
     sample.replace('state 10', 'state 11'),
     sample.replace('red', 'blue'),
@@ -134,4 +139,51 @@ test('real renderer produces repeatable accessible flowchart and sequence SVGs, 
     await put(figures[0].source, invalidFlow);
     await assert.rejects(generateDiagrams(options), /Parse error|Syntax error|Lexical error/);
   } finally { await cleanup(); }
+});
+
+test('freshness checks collect all failures and write opt-in diagnostics outside the source tree', { timeout: 120000 }, async () => {
+  const { root, figures, put, cleanup } = await fixture();
+  const diagnosticsDirectory = await mkdtemp(join(tmpdir(), 'jautomata-diagram-diagnostics-'));
+  const options = { root, log: () => {} };
+  try {
+    await assert.rejects(generateDiagrams({ ...options, check: true, diagnosticsDirectory: join(root, 'site/dist') }), /outside the repository/);
+    await generateDiagrams(options);
+    const originals = await Promise.all(figures.map((figure) => readFile(join(root, figure.asset), 'utf8')));
+    const edits = originals.map((contents, index) => {
+      const boundary = contents.indexOf('\n');
+      const payload = contents.slice(boundary + 1);
+      const changed = index === 0
+        ? payload.replace(/viewBox="([^"]+)"/, (_, value) => {
+          const coordinates = value.split(' ').map(Number);
+          coordinates[0] += 2;
+          return `viewBox="${coordinates.join(' ')}"`;
+        })
+        : payload.replace('Result', 'Changed result');
+      assert.notEqual(changed, payload);
+      return contents.slice(0, boundary).replace(/svg:[a-f0-9]{64}/, `svg:${hash(changed)}`) + '\n' + changed;
+    });
+    for (const [index, figure] of figures.entries()) await put(figure.asset, edits[index]);
+    await assert.rejects(generateDiagrams({ ...options, check: true, diagnosticsDirectory }), /2\/2 diagram checks failed/);
+    const report = JSON.parse(await readFile(join(diagnosticsDirectory, 'report.json'), 'utf8'));
+    assert.equal(report.checked, 2);
+    assert.equal(report.failed, 2);
+    assert.equal(report.tolerance, 0.25);
+    assert.equal(report.platform, process.platform);
+    assert.match(report.browser, /Chrome|Chromium/);
+    assert.deepEqual(report.results.map(({ id, kind }) => [id, kind]), [['flow', 'geometry'], ['sequence', 'structure']]);
+    assert.equal(report.results[0].delta, 2);
+    for (const [index, figure] of figures.entries()) {
+      assert.equal(await readFile(join(root, figure.asset), 'utf8'), edits[index], 'checks must preserve canonical assets');
+      assert.equal(await readFile(join(diagnosticsDirectory, `${figure.id}.committed.svg`), 'utf8'), edits[index]);
+      assert.equal(await readFile(join(diagnosticsDirectory, `${figure.id}.rendered.svg`), 'utf8'), originals[index].slice(originals[index].indexOf('\n') + 1));
+      await put(figure.asset, originals[index]);
+    }
+    await rm(diagnosticsDirectory, { recursive: true });
+    await generateDiagrams({ ...options, check: true, exact: true, diagnosticsDirectory });
+    assert.deepEqual(await readdir(diagnosticsDirectory), ['report.json'], 'passing figures do not create failure SVG pairs');
+    assert.equal(JSON.parse(await readFile(join(diagnosticsDirectory, 'report.json'), 'utf8')).failed, 0);
+  } finally {
+    await cleanup();
+    await rm(diagnosticsDirectory, { recursive: true, force: true });
+  }
 });

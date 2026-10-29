@@ -110,4 +110,22 @@ SVG metadata fingerprints the figure entry, source, description, shared renderer
 
 `--exact` demands identical bytes and is useful for repeated renders on the same platform. The default check compares all labels, styles, IDs, elements, path commands, and embedded font data exactly while allowing at most **0.25 SVG units** of coordinate drift (including viewport/size attributes). This explicitly bounded tolerance handles small browser/platform measurement differences; it does not discard geometry or substitute a source hash for rendering. Geometry changes beyond that bound fail. Identical bytes across macOS/Linux are not assumed: inspect the diff and rendered figure when upgrading Node, the browser, Mermaid, or fonts. Keep the lockfile pinned and regenerate all catalog assets after an intentional toolchain/config change.
 
+Freshness checks report every figure before returning a failure, so one platform
+difference cannot hide later differences. Coordinate diagnostics identify the
+element, ID, opening-tag offset in the committed SVG payload, attribute, numeric component, and committed/rendered
+values for the five largest changes. Text and style differences still fail exactly.
+For a complete JSON report and SVG pairs for failed comparisons, choose a temporary
+directory outside both the repository and any supplied fixture root:
+
+```sh
+diagram_diagnostics="$(mktemp -d)"
+DIAGRAM_DIAGNOSTICS_DIR="$diagram_diagnostics" npm run check-diagrams
+```
+
+`$diagram_diagnostics/report.json` records every result, tolerance, OS/architecture, Node, and Chromium
+versions. Diagnostics never enter the site output. The existing Pages workflow
+uploads a `diagram-diagnostics` artifact only if its check/build step fails. Keep
+the threshold unchanged until the complete comparison set explains a platform
+difference; do not regenerate or relax checks merely to hide a failed comparison.
+
 The existing single Pages workflow installs Chromium once, runs these focused tests and freshness checks, then retains the established site, browser, links, and deployment steps. [Mermaid CLI](https://github.com/mermaid-js/mermaid-cli) remains build-time tooling only.

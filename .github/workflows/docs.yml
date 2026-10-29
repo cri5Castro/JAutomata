@@ -49,11 +49,21 @@ jobs:
           PLAYWRIGHT_BROWSERS_PATH: /tmp/jautomata-playwright
         run: npm run test:diagrams
       - name: Check and build site serially
+        id: site_check
         env:
           PLAYWRIGHT_BROWSERS_PATH: /tmp/jautomata-playwright
+          DIAGRAM_DIAGNOSTICS_DIR: ${{ runner.temp }}/diagram-diagnostics
         run: |
           npm run check
           npm run build
+      - name: Upload failed diagram comparisons
+        if: failure() && steps.site_check.outcome == 'failure'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: diagram-diagnostics
+          path: ${{ runner.temp }}/diagram-diagnostics
+          retention-days: 7
+          if-no-files-found: warn
       - name: Run production browser checks
         env:
           PLAYWRIGHT_BROWSERS_PATH: /tmp/jautomata-playwright

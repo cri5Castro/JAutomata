@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFile, readdir, mkdir, rename, writeFile } from 'node:fs/promises';
-import { dirname, join, resolve, relative, posix } from 'node:path';
+import { dirname, join, resolve, relative, posix, sep, isAbsolute } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { validateDiagram } from 'oh-my-mermaid';
 import { renderMermaid } from '@mermaid-js/mermaid-cli';
@@ -164,14 +164,18 @@ const numberPattern = /[-+]?(?:\d*\.\d+|\d+\.?\d*)(?:e[-+]?\d+)?/gi;
 export function compareSvg(actual, expected, tolerance = 0.25) {
   const geometry = (svg) => {
     const values = [];
-    const numbers = (value) => value.replace(numberPattern, (number) => { values.push(Number(number)); return '~'; });
+    const numbers = (value, location) => {
+      let component = 0;
+      return value.replace(numberPattern, (number) => { values.push({ ...location, component: component++, value: Number(number) }); return '~'; });
+    };
     const skeleton = svg.replace(/<!--[\s\S]*?-->|<!\[CDATA\[[\s\S]*?\]\]>|<[A-Za-z](?:"[^"]*"|'[^']*'|[^'">])*>/g,
-      (tag) => tag.startsWith('<!') ? tag : tag.replace(/(\s)([\w:-]+)=("([^"]*)"|'([^']*)')/g, (_, space, key, quoted, doubleValue, singleValue) => {
+      (tag, tagOffset) => tag.startsWith('<!') ? tag : tag.replace(/(\s)([\w:-]+)=("([^"]*)"|'([^']*)')/g, (_, space, key, quoted, doubleValue, singleValue) => {
         const value = doubleValue ?? singleValue;
+        const location = { element: tag.match(/^<([\w:-]+)/)[1], id: tag.match(/\sid="([^"]*)"/)?.[1] ?? null, tagOffset, attribute: key };
         let normalized = value;
-        if (/^(d|points|transform|viewBox|x|y|x1|x2|y1|y2|cx|cy|rx|ry|r|width|height|textLength)$/.test(key)) normalized = numbers(value);
+        if (/^(d|points|transform|viewBox|x|y|x1|x2|y1|y2|cx|cy|rx|ry|r|width|height|textLength)$/.test(key)) normalized = numbers(value, location);
         else if (key === 'style') normalized = value.replace(/(^|;)(\s*max-width:\s*)([\d.]+)px(?=\s*(?:;|$))/g,
-          (_, separator, property, size) => `${separator}${property}${numbers(size)}px`);
+          (_, separator, property, size) => `${separator}${property}${numbers(size, { ...location, attribute: 'style:max-width' })}px`);
         return `${space}${key}=${quoted[0]}${normalized}${quoted[0]}`;
       }));
     return { skeleton, values };
@@ -181,10 +185,13 @@ export function compareSvg(actual, expected, tolerance = 0.25) {
   if (a.skeleton !== b.skeleton || a.values.length !== b.values.length) {
     let index = 0;
     while (index < a.skeleton.length && a.skeleton[index] === b.skeleton[index]) index++;
-    return { equal: false, reason: `SVG structure, labels, IDs, or styles differ at ${index}: ${JSON.stringify(a.skeleton.slice(index, index + 80))} / ${JSON.stringify(b.skeleton.slice(index, index + 80))}` };
+    return { equal: false, kind: 'structure', reason: `SVG structure, labels, IDs, or styles differ at ${index}: ${JSON.stringify(a.skeleton.slice(index, index + 80))} / ${JSON.stringify(b.skeleton.slice(index, index + 80))}` };
   }
-  const delta = a.values.reduce((max, value, index) => Math.max(max, Math.abs(value - b.values[index])), 0);
-  return { equal: delta <= tolerance, delta, reason: `maximum geometry difference ${delta.toFixed(4)} (allowed ${tolerance})` };
+  const changes = a.values.map(({ value, ...location }, index) => ({
+    ...location, committed: value, rendered: b.values[index].value, delta: Math.abs(value - b.values[index].value),
+  })).filter(({ delta }) => delta > 0).sort((left, right) => right.delta - left.delta);
+  const delta = changes[0]?.delta ?? 0;
+  return { equal: delta <= tolerance, kind: 'geometry', delta, largestChanges: changes.slice(0, 5), reason: `maximum geometry difference ${delta.toFixed(4)} (allowed ${tolerance})` };
 }
 
 function wrapSvg(svg, inputHash) {
@@ -206,7 +213,14 @@ async function atomicWrite(path, contents) {
   await rename(temporary, path);
 }
 
-export async function generateDiagrams({ root = repository, check = false, exact = false, log = console.log } = {}) {
+export async function generateDiagrams({ root = repository, check = false, exact = false, diagnosticsDirectory = process.env.DIAGRAM_DIAGNOSTICS_DIR, log = console.log } = {}) {
+  if (diagnosticsDirectory) {
+    diagnosticsDirectory = resolve(diagnosticsDirectory);
+    for (const base of [root, repository]) {
+      const path = relative(resolve(base), diagnosticsDirectory);
+      assert(path === '..' || path.startsWith(`..${sep}`) || isAbsolute(path), 'Diagram diagnostics must be outside the repository and input root');
+    }
+  }
   const { figures, config } = await loadCatalog(root);
   if (!figures.length) { log('Diagram catalog: 0 figures (migration has not populated it yet).'); return; }
   const commonInput = await Promise.all(['.omm/renderer.json', 'site/package-lock.json'].map((path) => read(root, path)));
@@ -217,26 +231,55 @@ export async function generateDiagrams({ root = repository, check = false, exact
     args: ['--no-sandbox', '--disable-setuid-sandbox', '--font-render-hinting=none'],
   });
   const outputs = [];
+  const results = [];
+  const browserVersion = await browser.version();
   try {
     for (const { entry, source, description } of figures) {
-      const inputHash = digest(JSON.stringify([...commonInput, entry, source, description]));
-      const rendered = await renderMermaid(browser, source, 'svg', {
-        svgId: entry.id,
-        mermaidConfig: { ...config.mermaid, deterministicIDSeed: entry.id },
-        viewport: { width: 1600, height: 1200, deviceScaleFactor: 1 },
-        fontEmbed: true,
-      });
-      const svg = await normalizeSvg(browser, Buffer.from(rendered.data).toString('utf8'), entry, description);
-      if (check) {
-        const committed = checkedSvg(await read(root, entry.asset), inputHash);
-        const result = compareSvg(committed, svg, exact ? 0 : config.geometryTolerance);
-        assert(result.equal, `${entry.id}: stale render: ${result.reason}; run npm run generate-diagrams`);
-        if (exact) assert.equal(committed, svg, `${entry.id}: exact SVG bytes differ`);
-        log(`Verified ${entry.id}: ${result.reason}`);
-      } else outputs.push({ path: join(root, entry.asset), contents: wrapSvg(svg, inputHash) });
+      try {
+        const inputHash = digest(JSON.stringify([...commonInput, entry, source, description]));
+        const rendered = await renderMermaid(browser, source, 'svg', {
+          svgId: entry.id,
+          mermaidConfig: { ...config.mermaid, deterministicIDSeed: entry.id },
+          viewport: { width: 1600, height: 1200, deviceScaleFactor: 1 },
+          fontEmbed: true,
+        });
+        const svg = await normalizeSvg(browser, Buffer.from(rendered.data).toString('utf8'), entry, description);
+        if (check) {
+          const contents = await read(root, entry.asset);
+          let result;
+          try {
+            const committed = checkedSvg(contents, inputHash);
+            result = compareSvg(committed, svg, exact ? 0 : config.geometryTolerance);
+            if (exact && committed !== svg && result.equal) Object.assign(result, { equal: false, reason: 'exact SVG bytes differ' });
+          } catch (error) {
+            result = { equal: false, kind: 'validation', reason: error.message };
+          }
+          if (diagnosticsDirectory && !result.equal) {
+            await atomicWrite(join(diagnosticsDirectory, `${entry.id}.committed.svg`), contents);
+            await atomicWrite(join(diagnosticsDirectory, `${entry.id}.rendered.svg`), svg);
+          }
+          results.push({ id: entry.id, ...result });
+          log(`${result.equal ? 'Verified' : 'FAILED'} ${entry.id}: ${result.reason}`);
+          if (result.largestChanges?.length) log(`  Largest coordinate changes: ${JSON.stringify(result.largestChanges)}`);
+        } else outputs.push({ path: join(root, entry.asset), contents: wrapSvg(svg, inputHash) });
+      } catch (error) {
+        if (!check) throw error;
+        results.push({ id: entry.id, equal: false, kind: 'validation-or-render', reason: error.message });
+        log(`FAILED ${entry.id}: ${error.message}`);
+      }
     }
   } finally {
     await browser.close();
+  }
+  if (check) {
+    const failed = results.filter(({ equal }) => !equal);
+    if (diagnosticsDirectory) {
+      await atomicWrite(join(diagnosticsDirectory, 'report.json'), JSON.stringify({
+        platform: process.platform, arch: process.arch, node: process.version, browser: browserVersion,
+        tolerance: exact ? 0 : config.geometryTolerance, checked: results.length, failed: failed.length, results,
+      }, null, 2) + '\n');
+    }
+    assert.equal(failed.length, 0, `${failed.length}/${results.length} diagram checks failed: ${failed.map(({ id, reason }) => `${id}: ${reason}`).join('; ')}; inspect diagnostics or run npm run generate-diagrams after reviewing the differences`);
   }
   // Finish all validation/rendering before replacing any assets.
   for (const output of outputs) { await atomicWrite(output.path, output.contents); log(`Generated ${relative(root, output.path)}`); }
