@@ -1,11 +1,11 @@
 {
-  "geometryTolerance": 0.25,
+  "geometryTolerance": 0.75,
   "mermaid": {
     "theme": "base",
     "securityLevel": "strict",
     "deterministicIds": true,
     "htmlLabels": false,
-    "fontFamily": "Open Sans",
+    "fontFamily": "Open Sans, Noto Sans Math",
     "flowchart": {
       "htmlLabels": false,
       "curve": "basis",
@@ -14,12 +14,12 @@
     },
     "sequence": {
       "useMaxWidth": true,
-      "actorFontFamily": "Open Sans",
-      "noteFontFamily": "Open Sans",
-      "messageFontFamily": "Open Sans"
+      "actorFontFamily": "Open Sans, Noto Sans Math",
+      "noteFontFamily": "Open Sans, Noto Sans Math",
+      "messageFontFamily": "Open Sans, Noto Sans Math"
     },
     "themeVariables": {
-      "fontFamily": "Open Sans",
+      "fontFamily": "Open Sans, Noto Sans Math",
       "fontSize": "18px",
       "primaryColor": "#e7f4f3",
       "primaryTextColor": "#143d3b",

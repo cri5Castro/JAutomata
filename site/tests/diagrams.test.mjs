@@ -5,6 +5,8 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { test } from 'node:test';
 import { listNodes, readNodeField, validateDiagram } from 'oh-my-mermaid';
+import puppeteer from 'puppeteer';
+import { chromium } from '@playwright/test';
 import { checkedSvg, compareSvg, generateDiagrams, loadCatalog, repository } from '../scripts/diagrams.mjs';
 
 const hash = (text) => createHash('sha256').update(text).digest('hex');
@@ -84,6 +86,73 @@ async function fixture() {
   for (const figure of figures) await put(figure.description, `${figure.title}: a static accessible test figure.`);
   return { root, figures, put, cleanup: () => rm(root, { recursive: true, force: true }) };
 }
+
+test('only generated neo solid-edge trim length shares the measured geometry bound', () => {
+  const edge = '<svg><path class="edge-pattern-solid flowchart-link" data-edge="true" data-et="edge" data-look="neo" d="M0,0L104,0" style="stroke-dasharray: 0 0 100 4; stroke-dashoffset: 0;;"/><text>a</text></svg>';
+  const shifted = edge.replace('0 0 100 4', '0 0 100.643 4');
+  const result = compareSvg(edge, shifted);
+  assert(result.equal);
+  assert.equal(result.largestChanges[0].attribute, 'style:generated-solid-trim-length');
+  assert.equal(compareSvg(edge, shifted, 0).equal, false);
+  assert.equal(compareSvg(edge, edge.replace('0 0 100 4', '0 0 100.751 4')).equal, false);
+  for (const [before, after] of [
+    ['0 0 100 4', '0.1 0 100 4'], ['0 0 100 4', '0 0.1 100 4'],
+    ['0 0 100 4', '0 0 100 4.1'], ['stroke-dashoffset: 0', 'stroke-dashoffset: 0.1'],
+    ['<text>a', '<text>b'],
+  ]) assert.equal(compareSvg(edge, edge.replace(before, after)).equal, false, before);
+  for (const altered of [
+    edge.replace('data-edge="true"', 'data-edge="false"'),
+    edge.replace('data-et="edge"', 'data-et="node"'),
+    edge.replace('data-look="neo"', 'data-look="classic"'),
+    edge.replace('edge-pattern-solid', 'edge-pattern-dotted'),
+    edge.replace('flowchart-link', 'custom-link'),
+    edge.replace('flowchart-link', 'flowchart-link edge-animation-fast'),
+    edge.replace('0;;', '0; stroke:red;'),
+    edge.replace('stroke-dasharray: 0 0 100 4;', 'stroke-dasharray: 100 4;'),
+  ]) assert.equal(compareSvg(altered, altered.replace('100 4', '100.1 4')).equal, false, altered);
+});
+
+test('embedded symbol glyphs use the bundled math font while covered glyphs retain Open Sans', { timeout: 120000 }, async () => {
+  const { root, figures, put, cleanup } = await fixture();
+  let browser;
+  try {
+    await put(figures[0].source, 'flowchart LR\n  A["∅ →"] -->|ε| B["A"]\n');
+    await generateDiagrams({ root, log: () => {} });
+    const svg = await readFile(join(root, figures[0].asset), 'utf8');
+    assert.match(svg, /Noto Sans Math/);
+    browser = await puppeteer.launch({ executablePath: chromium.executablePath(), headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+    const page = await browser.newPage();
+    await page.setRequestInterception(true);
+    page.on('request', (request) => request.url().startsWith('data:') ? request.continue() : request.abort());
+    await page.setContent(svg);
+    await page.evaluate(async () => {
+      const family = getComputedStyle(document.querySelector('svg text')).fontFamily;
+      for (const glyph of ['∅', '→', 'ε', 'A']) {
+        const probe = document.createElement('span');
+        probe.className = 'font-probe';
+        probe.style.cssText = `font-family: ${family}; font-size: 18px; font-weight: 400; display: block`;
+        probe.textContent = glyph;
+        document.body.append(probe);
+      }
+      await Promise.all([...document.fonts].map((font) => font.load()));
+      await document.fonts.ready;
+    });
+    const client = await page.createCDPSession();
+    await client.send('DOM.enable');
+    await client.send('CSS.enable');
+    const { root: documentNode } = await client.send('DOM.getDocument');
+    const { nodeIds } = await client.send('DOM.querySelectorAll', { nodeId: documentNode.nodeId, selector: '.font-probe' });
+    assert.equal(nodeIds.length, 4);
+    for (const [index, nodeId] of nodeIds.entries()) {
+      const { fonts } = await client.send('CSS.getPlatformFontsForNode', { nodeId });
+      assert(fonts.length > 0);
+      assert(fonts.every((font) => font.isCustomFont && font.familyName === (index < 2 ? 'Noto Sans Math' : 'Open Sans')), JSON.stringify(fonts));
+    }
+  } finally {
+    await browser?.close();
+    await cleanup();
+  }
+});
 
 test('catalog enumerates nested OMM nodes and rejects omissions, duplicates, and incorrect placements', async () => {
   const { root, figures, put, cleanup } = await fixture();
@@ -167,7 +236,7 @@ test('freshness checks collect all failures and write opt-in diagnostics outside
     const report = JSON.parse(await readFile(join(diagnosticsDirectory, 'report.json'), 'utf8'));
     assert.equal(report.checked, 2);
     assert.equal(report.failed, 2);
-    assert.equal(report.tolerance, 0.25);
+    assert.equal(report.tolerance, 0.75);
     assert.equal(report.platform, process.platform);
     assert.match(report.browser, /Chrome|Chromium/);
     assert.deepEqual(report.results.map(({ id, kind }) => [id, kind]), [['flow', 'geometry'], ['sequence', 'structure']]);

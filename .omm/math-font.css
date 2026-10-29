@@ -1,0 +1,11 @@
+/* Noto Sans Math 5.3.0, SIL Open Font License 1.1 (package LICENSE).
+ * The bundled WOFF2 contains these glyphs, but the package's Latin-only CSS
+ * range excludes them. Keep Open Sans first and use this face for symbols. */
+@font-face {
+  font-family: 'Noto Sans Math';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url('../site/node_modules/@fontsource/noto-sans-math/files/noto-sans-math-latin-400-normal.woff2') format('woff2');
+  unicode-range: U+2190-22FF;
+}

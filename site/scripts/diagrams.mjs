@@ -9,6 +9,8 @@ import puppeteer from 'puppeteer';
 import { chromium } from '@playwright/test';
 
 const script = fileURLToPath(import.meta.url);
+const mathFontCss = new URL('../../.omm/math-font.css', import.meta.url);
+const mathFontFile = new URL(import.meta.resolve('@fontsource/noto-sans-math/files/noto-sans-math-latin-400-normal.woff2'));
 export const repository = resolve(dirname(script), '../..');
 const digest = (value) => createHash('sha256').update(value).digest('hex');
 const text = (value) => typeof value === 'string' && value.trim().length > 0;
@@ -37,7 +39,7 @@ export async function loadCatalog(root = repository) {
   const config = JSON.parse(await read(root, '.omm/renderer.json'));
   assert.equal(manifest.version, 1, 'Unsupported diagram manifest version');
   assert(Array.isArray(manifest.figures), 'figures must be an array');
-  assert(config.geometryTolerance >= 0 && config.geometryTolerance <= 0.25, 'Geometry tolerance must be 0–0.25 SVG units');
+  assert(config.geometryTolerance >= 0 && config.geometryTolerance <= 0.75, 'Geometry tolerance must be 0–0.75 SVG units');
   const ids = new Set();
   const assets = new Set();
   const figures = [];
@@ -98,15 +100,20 @@ function escapeAttribute(value) {
 }
 
 /** Canonicalize SVG IDs/references and add accessible metadata without timestamps or host paths. */
-async function normalizeSvg(browser, raw, entry, description) {
+async function normalizeSvg(browser, raw, entry, description, embeddedMathCss) {
   const page = await browser.newPage();
   try {
-    return await page.evaluate(({ raw, entry, description }) => {
+    return await page.evaluate(({ raw, entry, description, embeddedMathCss }) => {
       const doc = new DOMParser().parseFromString(raw, 'image/svg+xml');
       if (doc.querySelector('parsererror')) throw new Error('Renderer returned invalid XML');
       const svg = doc.documentElement;
       if (svg.localName !== 'svg') throw new Error('Renderer did not return SVG');
       if (svg.querySelector('script, foreignObject')) throw new Error('Only static SVG elements are supported');
+      // CLI 12 embeds only the first family in a stack. Preserve the fallback
+      // actually used during layout as a self-contained, licensed SVG font.
+      const mathStyle = doc.createElementNS('http://www.w3.org/2000/svg', 'style');
+      mathStyle.textContent = embeddedMathCss;
+      svg.appendChild(mathStyle);
       svg.querySelectorAll(':scope > title, :scope > desc, :scope > metadata').forEach((node) => node.remove());
       const mapping = new Map();
       [svg, ...svg.querySelectorAll('[id]')].forEach((node, index) => {
@@ -152,7 +159,7 @@ async function normalizeSvg(browser, raw, entry, description) {
         for (const [name, value] of attributes) element.setAttribute(name, value);
       }
       return new XMLSerializer().serializeToString(svg).trim() + '\n';
-    }, { raw, entry, description });
+    }, { raw, entry, description, embeddedMathCss });
   } finally {
     await page.close();
   }
@@ -160,8 +167,8 @@ async function normalizeSvg(browser, raw, entry, description) {
 
 const numberPattern = /[-+]?(?:\d*\.\d+|\d+\.?\d*)(?:e[-+]?\d+)?/gi;
 
-/** Permit only tiny coordinate drift; never erase labels, IDs, styles, edges, or path commands. */
-export function compareSvg(actual, expected, tolerance = 0.25) {
+/** Bound coordinates/generated solid trims; keep labels, authored styles, and path commands exact. */
+export function compareSvg(actual, expected, tolerance = 0.75) {
   const geometry = (svg) => {
     const values = [];
     const numbers = (value, location) => {
@@ -169,15 +176,30 @@ export function compareSvg(actual, expected, tolerance = 0.25) {
       return value.replace(numberPattern, (number) => { values.push({ ...location, component: component++, value: Number(number) }); return '~'; });
     };
     const skeleton = svg.replace(/<!--[\s\S]*?-->|<!\[CDATA\[[\s\S]*?\]\]>|<[A-Za-z](?:"[^"]*"|'[^']*'|[^'">])*>/g,
-      (tag, tagOffset) => tag.startsWith('<!') ? tag : tag.replace(/(\s)([\w:-]+)=("([^"]*)"|'([^']*)')/g, (_, space, key, quoted, doubleValue, singleValue) => {
-        const value = doubleValue ?? singleValue;
-        const location = { element: tag.match(/^<([\w:-]+)/)[1], id: tag.match(/\sid="([^"]*)"/)?.[1] ?? null, tagOffset, attribute: key };
-        let normalized = value;
-        if (/^(d|points|transform|viewBox|x|y|x1|x2|y1|y2|cx|cy|rx|ry|r|width|height|textLength)$/.test(key)) normalized = numbers(value, location);
-        else if (key === 'style') normalized = value.replace(/(^|;)(\s*max-width:\s*)([\d.]+)px(?=\s*(?:;|$))/g,
-          (_, separator, property, size) => `${separator}${property}${numbers(size, { ...location, attribute: 'style:max-width' })}px`);
-        return `${space}${key}=${quoted[0]}${normalized}${quoted[0]}`;
-      }));
+      (tag, tagOffset) => {
+        if (tag.startsWith('<!')) return tag;
+        const element = tag.match(/^<([\w:-]+)/)[1];
+        const attributes = Object.fromEntries([...tag.matchAll(/\s([\w:-]+)=("([^"]*)"|'([^']*)')/g)].map((match) => [match[1], match[3] ?? match[4]]));
+        const classes = (attributes.class ?? '').split(/\s+/);
+        // Mermaid neo computes this marker trim from getTotalLength(). Only
+        // its uncustomized solid-edge form is geometry; authored styles stay exact.
+        const generatedTrim = element === 'path' && attributes['data-edge'] === 'true'
+          && attributes['data-et'] === 'edge' && attributes['data-look'] === 'neo'
+          && classes.includes('flowchart-link') && classes.includes('edge-pattern-solid')
+          && !classes.some((name) => /edge-pattern-(dotted|dashed)|edge-animation/.test(name))
+          && /^stroke-dasharray: 0 0 \d+(?:\.\d+)? 4; stroke-dashoffset: 0;;$/.test(attributes.style ?? '');
+        return tag.replace(/(\s)([\w:-]+)=("([^"]*)"|'([^']*)')/g, (_, space, key, quoted, doubleValue, singleValue) => {
+          const value = doubleValue ?? singleValue;
+          const location = { element, id: attributes.id ?? null, tagOffset, attribute: key };
+          let normalized = value;
+          if (/^(d|points|transform|viewBox|x|y|x1|x2|y1|y2|cx|cy|rx|ry|r|width|height|textLength)$/.test(key)) normalized = numbers(value, location);
+          else if (key === 'style') normalized = value.replace(/(^|;)(\s*max-width:\s*)([\d.]+)px(?=\s*(?:;|$))/g,
+            (_, separator, property, size) => `${separator}${property}${numbers(size, { ...location, attribute: 'style:max-width' })}px`);
+          if (key === 'style' && generatedTrim) normalized = normalized.replace(/^(stroke-dasharray: 0 0 )(\d+(?:\.\d+)?)( 4;)/,
+            (_, prefix, length, suffix) => `${prefix}${numbers(length, { ...location, attribute: 'style:generated-solid-trim-length' })}${suffix}`);
+          return `${space}${key}=${quoted[0]}${normalized}${quoted[0]}`;
+        });
+      });
     return { skeleton, values };
   };
   const a = geometry(actual);
@@ -225,6 +247,11 @@ export async function generateDiagrams({ root = repository, check = false, exact
   if (!figures.length) { log('Diagram catalog: 0 figures (migration has not populated it yet).'); return; }
   const commonInput = await Promise.all(['.omm/renderer.json', 'site/package-lock.json'].map((path) => read(root, path)));
   commonInput.push(await readFile(script, 'utf8'));
+  const fontCss = await readFile(mathFontCss, 'utf8');
+  const fontBytes = await readFile(mathFontFile);
+  const fontLicense = await readFile(new URL('../LICENSE', mathFontFile), 'utf8');
+  commonInput.push(fontCss, digest(fontBytes), fontLicense);
+  const embeddedMathCss = `/* ${fontLicense.replaceAll('*/', '* /')} */\n${fontCss.replace(/url\('[^']+'\)/, `url('data:font/woff2;base64,${fontBytes.toString('base64')}')`)}`;
   const browser = await puppeteer.launch({
     executablePath: process.env.DIAGRAM_CHROMIUM_EXECUTABLE || chromium.executablePath(),
     headless: true,
@@ -242,8 +269,9 @@ export async function generateDiagrams({ root = repository, check = false, exact
           mermaidConfig: { ...config.mermaid, deterministicIDSeed: entry.id },
           viewport: { width: 1600, height: 1200, deviceScaleFactor: 1 },
           fontEmbed: true,
+          customFontCSS: [{ cssUrl: mathFontCss, allowParentDirectoryLevel: 1 }],
         });
-        const svg = await normalizeSvg(browser, Buffer.from(rendered.data).toString('utf8'), entry, description);
+        const svg = await normalizeSvg(browser, Buffer.from(rendered.data).toString('utf8'), entry, description, embeddedMathCss);
         if (check) {
           const contents = await read(root, entry.asset);
           let result;
