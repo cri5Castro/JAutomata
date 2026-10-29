@@ -157,8 +157,19 @@ test('learning map leads to paired study and dense curriculum pages stay usable'
   await expect(details).toHaveAttribute('open', '');
   const code = page.locator('.expressive-code pre').first();
   await expect(code).toBeVisible();
-  await code.focus();
-  await expect(page.locator(':focus')).toHaveAttribute('aria-label', 'Scrollable code example');
+  await expect(code).toHaveAttribute('aria-label', 'Scrollable code example');
+  const overflows = await code.evaluate((element) => element.scrollWidth > element.clientWidth);
+  // Expressive Code updates tab stops after measuring overflow with ResizeObserver.
+  await expect(code).toHaveJSProperty('tabIndex', overflows ? 0 : -1);
+  if (overflows) {
+    await code.focus();
+    await expect(code).toBeFocused();
+    await expect(page.locator(':focus')).toHaveAttribute('aria-label', 'Scrollable code example');
+    await page.keyboard.press('ArrowRight');
+    await expect.poll(() => code.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0);
+  } else {
+    await expect(summary).toBeFocused();
+  }
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
   const scan = await new AxeBuilder({ page }).include('main').analyze();
   await testInfo.attach('axe-dense-curriculum-page', { body: JSON.stringify(scan, null, 2), contentType: 'application/json' });
