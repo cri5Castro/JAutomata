@@ -10,11 +10,12 @@
     "generate-api": "cd .. && uv run --project python python python/scripts/generate_api_docs.py",
     "generate-traces": "cd .. && uv run --project python python python/scripts/generate_teaching_traces.py",
     "check-generated": "cd .. && uv run --project python python python/scripts/generate_api_docs.py --check && uv run --project python python python/scripts/generate_teaching_traces.py --check",
+    "check-content": "node --test ./tests/prepare-content.test.mjs",
     "prepare-content": "node ./scripts/prepare-content.mjs",
     "dev": "npm run prepare-content && astro dev",
-    "build": "npm run check-generated && npm run prepare-content && astro build",
+    "build": "npm run check-generated && npm run check-content && npm run prepare-content && astro build",
     "preview": "node ./scripts/preview.mjs",
-    "check": "npm run check-generated && npm run prepare-content && astro check",
+    "check": "npm run check-generated && npm run check-content && npm run prepare-content && astro check",
     "test:e2e": "playwright test",
     "test:links": "node ./scripts/check-links.mjs"
   },
@@ -27,6 +28,7 @@
     "@astrojs/check": "0.9.12",
     "@axe-core/playwright": "4.14.0",
     "@playwright/test": "1.64.1",
+    "github-slugger": "2.0.0",
     "typescript": "5.9.3"
   }
 }

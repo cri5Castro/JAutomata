@@ -33,7 +33,7 @@ async function exists(file) {
 }
 
 function idsFrom(html) {
-  return new Set([...html.matchAll(/\sid=(['"])(.*?)\1/g)].map((match) => match[2]));
+  return [...html.matchAll(/\sid=(['"])(.*?)\1/g)].map((match) => match[2]);
 }
 
 function hrefsFrom(html) {
@@ -65,7 +65,7 @@ async function checkReference(sourceFile, reference) {
   }
   if (fragment) {
     const targetHtml = await readFile(target, 'utf8');
-    if (!idsFrom(targetHtml).has(decodeURIComponent(fragment))) {
+    if (!new Set(idsFrom(targetHtml)).has(decodeURIComponent(fragment))) {
       errors.push(`${path.relative(dist, sourceFile)}: missing anchor #${fragment} in ${path.relative(dist, target)}`);
     }
   }
@@ -77,6 +77,11 @@ if (htmlFiles.length === 0) {
 }
 for (const file of htmlFiles) {
   const html = await readFile(file, 'utf8');
+  const ids = idsFrom(html);
+  const duplicateIds = ids.filter((id, index) => ids.indexOf(id) !== index);
+  for (const id of new Set(duplicateIds)) {
+    errors.push(`${path.relative(dist, file)}: duplicate id #${id}`);
+  }
   await Promise.all(hrefsFrom(html).map((reference) => checkReference(file, reference)));
 }
 

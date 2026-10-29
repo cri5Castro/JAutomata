@@ -6,8 +6,8 @@ hero:
   title: Make every state visible.
   tagline: Learn the automata pipeline in short, connected steps — then inspect the formal details when you are ready.
   actions:
-    - text: Start with foundations
-      link: /JAutomata/learn/foundations/
+    - text: Choose a study route
+      link: /JAutomata/learning-map/
     - text: Open the glossary
       link: /JAutomata/reference/glossary/
 ---
@@ -21,6 +21,14 @@ hero:
 This is the canonical authored Markdown documentation. Start with one short
 lesson, run its assertions, then continue; formal detail is signposted instead
 of placed before the first working example.
+
+## Choose your route
+
+- [Complete learning map](learning-map.md) pairs fifteen focused theory pages
+  with runnable tutorials and four capstone labs. It is the best place to stop
+  and resume.
+- The [short learning path](tutorial.md) keeps the original compact route from
+  regex to NFA to DFA.
 
 ## Start here
 
@@ -53,6 +61,8 @@ of placed before the first working example.
   complete-DFA policy.
 - [Java reference behavior](java-reference.md) inventories all eleven Java
   sources with exact source links.
+- [Source curriculum map](reference/source-curriculum.md) distinguishes comments,
+  verified behavior, and added explanation for the full course.
 
 The preserved Java tree is [source on GitHub](https://github.com/cri5Castro/JAutomata/tree/master/src). The installable package, examples,
 and tests are [in the Python source on GitHub](https://github.com/cri5Castro/JAutomata/tree/master/python).

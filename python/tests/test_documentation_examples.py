@@ -16,10 +16,35 @@ from jautomata import model, regex, simulation, subsets, thompson
 ROOT = Path(__file__).resolve().parents[2]
 DOCS = ROOT / "docs"
 EXAMPLE = ROOT / "python" / "examples" / "regex_pipeline.py"
+# The executor below intentionally accepts one unambiguous Markdown form.  Any
+# Python-like fence that differs (language alias, case, attributes, delimiter,
+# or indentation) must fail rather than silently escaping verification.
+UNSUPPORTED_PYTHON_FENCE = re.compile(
+    r"^(?!~~~python$)[ \t]{0,3}(?:`{3,}|~{3,})[ \t]*(?i:py(?:thon)?\d*)\b[^\r\n]*$",
+    re.MULTILINE,
+)
 
 
 class DocumentationExamplesTests(unittest.TestCase):
     """Regression coverage for examples presented to users."""
+
+    def test_python_fence_guard_only_accepts_the_executed_form(self) -> None:
+        accepted = "~~~python\nprint('checked')\n~~~\n"
+        unsupported = (
+            "```python\n",
+            "~~~py\n",
+            "~~~python3\n",
+            "~~~Python\n",
+            "~~~PYTHON\n",
+            "~~~~python\n",
+            "~~~python linenums=1\n",
+            "  ~~~python\n",
+        )
+
+        self.assertIsNone(UNSUPPORTED_PYTHON_FENCE.search(accepted))
+        for opener in unsupported:
+            with self.subTest(opener=opener.rstrip()):
+                self.assertIsNotNone(UNSUPPORTED_PYTHON_FENCE.search(opener))
 
     def test_public_module_doctests(self) -> None:
         for module in (jautomata, model, regex, thompson, simulation, subsets):
@@ -32,6 +57,11 @@ class DocumentationExamplesTests(unittest.TestCase):
         for document_path in sorted(DOCS.rglob("*.md")):
             namespace: dict[str, object] = {}
             document = document_path.read_text()
+            with self.subTest(document=document_path.relative_to(DOCS), fence="language"):
+                self.assertIsNone(
+                    UNSUPPORTED_PYTHON_FENCE.search(document),
+                    "advertised executable Python must use ~~~python so it is verified",
+                )
             blocks = re.findall(r"~~~python\n(.*?)~~~", document, flags=re.DOTALL)
             for number, block in enumerate(blocks, 1):
                 with self.subTest(document=document_path.relative_to(DOCS), block=number):

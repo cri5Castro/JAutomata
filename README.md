@@ -48,6 +48,10 @@ New to automata? Follow the short, source-linked learning path:
 4. [Practice](docs/practice/exercises.md) has revealable solutions; use the
    [glossary](docs/reference/glossary.md) as a quick reference.
 
+For the complete course, use the [learning map](docs/learning-map.md): fifteen
+theory/tutorial pairs and four source-linked capstone labs, with clear places to
+pause and resume.
+
 The published learning site is served at
 [cri5castro.github.io/JAutomata](https://cri5castro.github.io/JAutomata/). Its
 production build, browser checks, and link checks are documented in

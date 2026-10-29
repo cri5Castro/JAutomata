@@ -134,6 +134,37 @@ test('search name remains accessible across platform shortcut and viewport chang
   }
 });
 
+test('learning map leads to paired study and dense curriculum pages stay usable', async ({ page }, testInfo) => {
+  await page.goto(route('learning-map/'));
+  const main = page.locator('main');
+  await expect(main.getByRole('heading', { name: 'Complete learning map' })).toHaveCount(1);
+  await expect(main.getByRole('heading', { name: 'Complete learning map' })).toBeVisible();
+  await expect(main.locator('#complete-learning-map')).toHaveCount(1);
+  await main.getByRole('link', { name: 'Finite automata and languages' }).click();
+  await expect(page).toHaveURL(/\/JAutomata\/theory\/automata\//);
+  await page.locator('main').getByRole('link', { name: 'paired tutorial' }).click();
+  await expect(page).toHaveURL(/\/JAutomata\/tutorials\/automata\//);
+
+  await page.goto(route('learning-map/'));
+  await main.getByRole('link', { name: /Practica 3:/ }).click();
+  await expect(page).toHaveURL(/\/JAutomata\/labs\/practica3\//);
+
+  await page.goto(route('tutorials/validation-complexity/'));
+  const details = main.locator('details').first();
+  const summary = details.locator('summary');
+  await summary.focus();
+  await page.keyboard.press('Enter');
+  await expect(details).toHaveAttribute('open', '');
+  const code = page.locator('.expressive-code pre').first();
+  await expect(code).toBeVisible();
+  await code.focus();
+  await expect(page.locator(':focus')).toHaveAttribute('aria-label', 'Scrollable code example');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+  const scan = await new AxeBuilder({ page }).include('main').analyze();
+  await testInfo.attach('axe-dense-curriculum-page', { body: JSON.stringify(scan, null, 2), contentType: 'application/json' });
+  expect(scan.violations).toEqual([]);
+});
+
 test('essential lesson text and diagram alternatives remain available without JavaScript', async ({ browser, baseURL }) => {
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
@@ -141,5 +172,18 @@ test('essential lesson text and diagram alternatives remain available without Ja
   await expect(page.getByRole('heading', { name: /thompson/i }).first()).toBeVisible();
   await expect(page.locator('img.diagram').first()).toHaveAttribute('alt', /.+/);
   await expect(page.getByText(/Without JavaScript:/)).toBeVisible();
+  await context.close();
+});
+
+test('learning map and a capstone remain navigable without JavaScript', async ({ browser, baseURL }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  const page = await context.newPage();
+  await page.goto(new URL('learning-map/', baseURL).toString());
+  await expect(page.getByRole('heading', { name: 'Complete learning map' })).toHaveCount(1);
+  await expect(page.getByRole('heading', { name: 'Complete learning map' })).toBeVisible();
+  await expect(page.locator('#complete-learning-map')).toHaveCount(1);
+  await expect(page.getByRole('link', { name: /Practica 3:/ }).first()).toBeVisible();
+  await page.goto(new URL('labs/main/', baseURL).toString());
+  await expect(page.getByRole('heading', { name: /Main: turn historical experiments/i }).first()).toBeVisible();
   await context.close();
 });
